@@ -1,0 +1,877 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjogIuC4o+C4ueC5ieC4l+C4seC4meC4oeC4tOC4iOC4ieC4suC4iuC4teC4niIsICJzaG9ydF9uYW1lIjogIuC4o+C4ueC5ieC4l+C4seC4meC4oeC4tOC4iOC4ieC4suC4iuC4teC4niIsICJzdGFydF91cmwiOiAiLiIsICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLCAiYmFja2dyb3VuZF9jb2xvciI6ICIjMTcyMTJCIiwgInRoZW1lX2NvbG9yIjogIiMxNzIxMkIiLCAiaWNvbnMiOiBbeyJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCNGJXeHVjejBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01DOXpkbWNpSUhacFpYZENiM2c5SWpBZ01DQXhPVElnTVRreUlqNDhjbVZqZENCM2FXUjBhRDBpTVRreUlpQm9aV2xuYUhROUlqRTVNaUlnWm1sc2JEMGlJekUzTWpFeVFpSXZQanhuSUhSeVlXNXpabTl5YlQwaWRISmhibk5zWVhSbEtEUTRMRE0zS1NJZ1ptbHNiRDBpYm05dVpTSWdjM1J5YjJ0bFBTSWpRemc0TmpKQ0lpQnpkSEp2YTJVdGQybGtkR2c5SWpjaUlITjBjbTlyWlMxc2FXNWxZMkZ3UFNKeWIzVnVaQ0lnYzNSeWIydGxMV3hwYm1WcWIybHVQU0p5YjNWdVpDSStQSEJoZEdnZ1pEMGlUVFE0SURZZ1REa3dJREl6SUZZMk5DQkRPVEFnT1RNZ056RWdNVEV5SURRNElERXlNQ0JETWpVZ01URXlJRFlnT1RNZ05pQTJOQ0JXTWpNZ1dpSXZQanh3WVhSb0lHUTlJazB5T0NBMk1pQk1ORE1nTnpjZ1REY3dJRFEySWk4K1BDOW5Qand2YzNablBnbz0iLCAic2l6ZXMiOiAiYW55IiwgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIsICJwdXJwb3NlIjogImFueSJ9XX0=" />
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgZmlsbD0iIzE3MjEyQiIvPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQ4LDM3KSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjQzg4NjJCIiBzdHJva2Utd2lkdGg9IjciIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTQ4IDYgTDkwIDIzIFY2NCBDOTAgOTMgNzEgMTEyIDQ4IDEyMCBDMjUgMTEyIDYgOTMgNiA2NCBWMjMgWiIvPjxwYXRoIGQ9Ik0yOCA2MiBMNDMgNzcgTDcwIDQ2Ii8+PC9nPjwvc3ZnPgo=" />
+<meta name="theme-color" content="#17212B" />
+<title>รู้ทันมิจฉาชีพ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&family=Taviraj:wght@400;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#17212B;
+    --ink-soft:#26333F;
+    --ink-border: rgba(255,255,255,.16);
+    --paper:#F5EFE1;
+    --paper-text:#241C12;
+    --paper-text-soft:#6B5D46;
+    --line: rgba(36,28,18,.14);
+    --caution:#C8862B;
+    --safe:#2F6F5E;
+    --safe-bg:#E4EEE9;
+    --danger:#B23A2E;
+    --danger-bg:#F3E1DD;
+    --accept:#2FA84F;
+    --decline:#D6402F;
+    --font-display:'Taviraj', serif;
+    --font-body:'Sarabun', sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; height:100%; }
+  body{
+    background:var(--paper);
+    font-family: var(--font-body);
+    color: var(--paper-text);
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: none;
+  }
+  #phone-frame{
+    width:100%;
+    min-height:100vh;
+    min-height:100dvh;
+    background: var(--paper);
+    color: var(--paper-text);
+    position:relative;
+    overflow-x:hidden;
+    display:flex;
+    flex-direction:column;
+    transition: background .25s ease, color .25s ease;
+  }
+  #phone-frame.dark{
+    background: var(--ink);
+    color:#EDEFF2;
+  }
+  #app{ flex:1 1 auto; display:flex; flex-direction:column; }
+
+  h1,h2,h3{ font-family: var(--font-display); margin:0; }
+  p{ margin:0; }
+  button{ font-family: var(--font-body); }
+
+  .screen{
+    flex:1 1 auto; display:flex; flex-direction:column;
+    padding-left: max(24px, env(safe-area-inset-left));
+    padding-right: max(24px, env(safe-area-inset-right));
+    padding-top: max(28px, env(safe-area-inset-top));
+    padding-bottom: max(28px, env(safe-area-inset-bottom));
+  }
+
+  /* ---- shared controls ---- */
+  .btn-primary{
+    display:flex; align-items:center; justify-content:center;
+    width:100%; padding:16px 20px; border-radius:14px;
+    background: var(--ink); color: var(--paper);
+    font-weight:600; font-size:16px; border:none; cursor:pointer;
+    margin-top:20px;
+  }
+  #phone-frame.dark .btn-primary{ background:var(--paper); color:var(--ink); }
+  .btn-primary:active{ transform:scale(.98); }
+  .btn-secondary{
+    display:flex; align-items:center; justify-content:center;
+    padding:14px 18px; border-radius:14px;
+    background:transparent; color:var(--paper-text);
+    font-weight:600; font-size:15px; border:1.5px solid var(--line); cursor:pointer;
+  }
+  .btn-secondary:active{ transform:scale(.98); }
+  .text-input{
+    width:100%; padding:14px 16px; border-radius:12px;
+    border:1.5px solid var(--line); background:#FFFDF8;
+    font-family:var(--font-body); font-size:16px; color:var(--paper-text);
+    margin-top:8px;
+  }
+  .text-input:focus{ outline:2px solid var(--caution); outline-offset:1px; }
+  .field-label{ font-size:13px; color:var(--paper-text-soft); font-weight:600; margin-top:26px; }
+  .topbar{ display:flex; justify-content:space-between; align-items:baseline; }
+  .topbar-label{ font-size:13px; font-weight:600; letter-spacing:.02em; color:var(--paper-text-soft); }
+  .topbar-count{ font-size:13px; font-weight:600; color:var(--paper-text-soft); }
+
+  /* ---- home ---- */
+  .home-screen{ align-items:flex-start; }
+  .home-mark{ color:var(--caution); margin-bottom:6px; }
+  .home-title{ font-size:32px; font-weight:700; line-height:1.15; margin-top:6px; }
+  .home-subtitle{ font-size:15.5px; color:var(--paper-text-soft); margin-top:12px; line-height:1.6; }
+  .home-note{ font-size:13.5px; color:var(--paper-text-soft); margin-top:14px; line-height:1.6; }
+  .home-warning{ font-size:13px; color:var(--danger); margin-top:14px; line-height:1.5; background:var(--danger-bg); padding:10px 12px; border-radius:10px; }
+  .home-screen .btn-primary{ margin-top:auto; }
+
+  /* ---- lesson ---- */
+  .dots{ display:flex; gap:6px; margin-top:16px; }
+  .dot{ width:7px; height:7px; border-radius:50%; background:var(--line); }
+  .dot.active{ background:var(--caution); width:20px; border-radius:4px; transition:all .2s; }
+  .lesson-title{ font-size:24px; font-weight:600; margin-top:26px; line-height:1.3; }
+  .lesson-body{ font-size:15.5px; line-height:1.75; color:var(--paper-text); margin-top:16px; white-space:pre-line; }
+  .nav-row{ margin-top:auto; padding-top:24px; display:flex; gap:10px; align-items:center; }
+  .nav-row .btn-primary{ margin-top:0; flex:1; }
+  .nav-row .btn-secondary{ flex:0 0 auto; }
+
+  /* ---- quiz ---- */
+  .progress-bar{ height:4px; background:var(--line); border-radius:2px; margin-top:14px; overflow:hidden; }
+  .progress-fill{ height:100%; background:var(--caution); transition:width .3s ease; }
+  .quiz-question{ font-size:19px; font-weight:600; line-height:1.5; margin-top:24px; font-family:var(--font-body); }
+  .options{ display:flex; flex-direction:column; gap:10px; margin-top:20px; }
+  .option{
+    text-align:left; padding:14px 16px; border-radius:12px;
+    border:1.5px solid var(--line); background:#FFFDF8;
+    font-size:15px; color:var(--paper-text); cursor:pointer; line-height:1.5;
+  }
+  .option:active{ transform:scale(.99); }
+  .option.correct{ border-color:var(--safe); background:var(--safe-bg); color:#1D4B3F; font-weight:600; }
+  .option.wrong{ border-color:var(--danger); background:var(--danger-bg); color:#7A281E; font-weight:600; }
+  .option.disabled{ cursor:default; }
+  .explain-box{ margin-top:16px; padding:14px 16px; border-radius:12px; background:#EFE8D6; }
+  .explain-box p{ font-size:14px; line-height:1.65; color:var(--paper-text-soft); }
+
+  /* ---- call screens ---- */
+  .call-screen{ align-items:center; text-align:center; justify-content:flex-start; }
+  .call-top{ align-self:stretch; text-align:left; }
+  .call-label{ font-size:13px; letter-spacing:.03em; color:#9AA6B1; font-weight:600; }
+  .avatar-ring{
+    width:120px; height:120px; border-radius:50%; margin-top:48px;
+    background:linear-gradient(160deg,#3A4A59,#1E2932);
+    display:flex; align-items:center; justify-content:center; color:#8492A0;
+    position:relative;
+  }
+  .avatar-ring.small{ width:88px; height:88px; margin-top:20px; }
+  .avatar-ring::before{
+    content:''; position:absolute; inset:-14px; border-radius:50%;
+    border:2px solid rgba(255,255,255,.25); animation: pulse 1.8s ease-out infinite;
+  }
+  @keyframes pulse{ 0%{ transform:scale(.85); opacity:.8; } 100%{ transform:scale(1.35); opacity:0; } }
+  @media (prefers-reduced-motion: reduce){ .avatar-ring::before{ animation:none; } }
+  .caller-name{ font-size:22px; font-weight:600; margin-top:22px; }
+  .caller-number{ font-size:15px; color:#9AA6B1; margin-top:6px; letter-spacing:.02em; }
+  .call-timer{ font-size:15px; color:#9AA6B1; margin-top:10px; font-variant-numeric:tabular-nums; }
+  .call-status{ font-size:15px; color:#D7DCE1; margin-top:8px; min-height:20px; }
+  .call-actions{ display:flex; gap:56px; margin-top:auto; padding-top:40px; }
+  .call-actions.single{ gap:0; }
+  .call-action-col{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+  .call-action-col span{ font-size:13px; color:#9AA6B1; }
+  .call-btn{ width:72px; height:72px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:none; color:#fff; cursor:pointer; }
+  .call-btn.accept{ background:var(--accept); }
+  .call-btn.decline{ background:var(--decline); }
+  .call-btn.hangup{ background:var(--decline); width:66px; height:66px; }
+  .call-btn:active{ transform:scale(.95); }
+
+  /* ---- result screens ---- */
+  .result-screen{ align-items:center; text-align:center; justify-content:center; padding-top:40px; }
+  .result-icon{ width:76px; height:76px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+  .tone-safe .result-icon{ background:var(--safe-bg); color:var(--safe); }
+  .tone-danger .result-icon{ background:var(--danger-bg); color:var(--danger); }
+  .result-title{ font-size:23px; font-weight:600; margin-top:22px; line-height:1.35; }
+  .result-body{ font-size:15px; line-height:1.7; color:var(--paper-text-soft); margin-top:14px; }
+  .steps-box{ width:100%; text-align:left; margin-top:22px; padding:16px 18px; border-radius:14px; background:#EFE8D6; }
+  .steps-title{ font-size:13px; font-weight:700; color:var(--paper-text-soft); }
+  .steps-box ol{ margin:10px 0 0; padding-left:18px; }
+  .steps-box li{ font-size:14px; line-height:1.7; margin-bottom:4px; }
+  .result-screen .btn-primary{ width:100%; }
+
+  /* ---- quiz result ---- */
+  .quizresult-screen{ align-items:center; text-align:center; }
+  .score-label{ font-size:14px; color:var(--paper-text-soft); margin-top:6px; }
+  .score-circle{
+    width:128px; height:128px; border-radius:50%; margin-top:18px;
+    background:var(--ink); color:var(--paper);
+    display:flex; align-items:baseline; justify-content:center; gap:2px;
+  }
+  .score-circle span{ font-family:var(--font-display); font-size:44px; font-weight:700; }
+  .score-circle small{ font-size:16px; opacity:.7; }
+  .callout-box{ width:100%; margin-top:24px; padding:14px 16px; border-radius:12px; background:#EFE8D6; text-align:left; }
+  .callout-label{ font-size:12px; font-weight:700; color:var(--paper-text-soft); text-transform:none; }
+  .callout-text{ font-size:14.5px; margin-top:4px; line-height:1.5; }
+  .review-list{ width:100%; margin-top:22px; display:flex; flex-direction:column; gap:10px; text-align:left; }
+  .review-item{ display:flex; gap:12px; padding:12px 14px; border-radius:12px; border:1.5px solid var(--line); }
+  .review-item.ok .review-icon{ color:var(--safe); }
+  .review-item.bad .review-icon{ color:var(--danger); }
+  .review-icon{ flex:0 0 auto; margin-top:2px; }
+  .review-q{ font-size:13.5px; font-weight:600; line-height:1.5; }
+  .review-explain{ font-size:12.5px; color:var(--paper-text-soft); margin-top:4px; line-height:1.55; }
+  .hotline-box{ width:100%; margin-top:24px; padding:16px 18px; border-radius:14px; border:1.5px solid var(--line); text-align:left; }
+  .hotline-title{ font-size:13px; font-weight:700; color:var(--paper-text-soft); }
+  .hotline-row{ display:flex; justify-content:space-between; align-items:center; margin-top:10px; font-size:14px; gap:12px; }
+  .hotline-row strong{ font-family:var(--font-display); font-size:18px; color:var(--ink); flex:0 0 auto; }
+  .quizresult-screen .btn-primary{ width:100%; }
+</style>
+</head>
+<body>
+  <div id="phone-frame"><div id="app"></div></div>
+
+<script>
+(function(){
+'use strict';
+
+/* =========================================================
+   ตั้งค่าก่อนใช้งานจริง
+   ใส่ Anthropic API key ของคุณแทนที่ข้อความด้านล่าง
+   ไฟล์นี้เรียก Anthropic API ตรงจากเบราว์เซอร์ (client-side)
+   เหมาะสำหรับสาธิต/นำเสนอในชั้นเรียนเท่านั้น — ห้ามแจกไฟล์นี้
+   ให้คนอื่นแบบเปิดเผย เพราะ API key จะถูกฝังอยู่ในโค้ดที่มองเห็นได้
+   ========================================================= */
+var ANTHROPIC_API_KEY = 'YOUR_ANTHROPIC_API_KEY_HERE';
+var ANTHROPIC_MODEL = 'claude-sonnet-5'; // เปลี่ยนเป็น 'claude-haiku-4-5-20251001' ได้ถ้าต้องการความเร็วมากกว่า
+var ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
+
+/* ---------------- เนื้อหาบทเรียน ---------------- */
+var LESSONS = [
+  {
+    title: 'กลโกงพื้นฐาน: มิจฉาชีพหลอกอย่างไร',
+    body: 'มิจฉาชีพมักอ้างตัวเป็นเจ้าหน้าที่มหาวิทยาลัย ธนาคาร หรือหน่วยงานราชการ แล้วสร้างเรื่องเร่งด่วนขึ้นมาให้คุณตกใจและรีบตัดสินใจ เช่น อ้างว่าที่นั่งทัศนศึกษาใกล้หมดสิทธิ์ หรือบัญชีมีปัญหาต้องแก้ไขด่วน เป้าหมายคือทำให้คุณคิดไม่ทันและทำตามที่สั่งโดยไม่ตรวจสอบ'
+  },
+  {
+    title: 'สัญญาณอันตรายที่ต้องจับตา',
+    body: 'ขอให้โอนเงินเข้าบัญชีบุคคลธรรมดาแทนบัญชีหน่วยงาน, เร่งให้ตัดสินใจภายในเวลาสั้น ๆ, ขอให้เก็บเป็นความลับห้ามปรึกษาใคร, ใช้เบอร์หรือช่องทางที่ไม่ตรงกับเว็บไซต์ทางการ, และขอข้อมูลอ่อนไหวอย่าง OTP หรือรหัสผ่าน — ยิ่งมีสัญญาณเหล่านี้พร้อมกันหลายข้อ ยิ่งควรระวัง'
+  },
+  {
+    title: 'ทำไม "ทัศนศึกษาต่างประเทศ" ถึงเป็นเป้าหมายยอดนิยม',
+    body: 'ค่าใช้จ่ายทัศนศึกษาต่างประเทศมักเป็นเงินก้อนใหญ่และมีเส้นตายชัดเจน นักศึกษาจึงมักกลัวพลาดโอกาสและตัดสินใจเร็วโดยไม่ทันตั้งสติ มิจฉาชีพจึงเลือกหัวข้อนี้เพราะสร้างความกดดันได้ง่ายและได้ผลดีกว่าการหลอกเรื่องทั่วไป'
+  },
+  {
+    title: 'ควรทำอย่างไรเมื่อสงสัยว่ากำลังโดนหลอก',
+    body: 'วางสายได้ทันทีโดยไม่ต้องรู้สึกผิด จากนั้นตรวจสอบเรื่องดังกล่าวด้วยตัวเองผ่านช่องทางทางการที่คุณหาเจอเอง เช่น เว็บไซต์คณะหรือเบอร์กลางมหาวิทยาลัย ไม่ใช่เบอร์หรือลิงก์ที่ผู้โทรส่งมาให้ และควรปรึกษาเพื่อนหรือผู้ปกครองก่อนโอนเงินทุกครั้ง'
+  },
+  {
+    title: 'ถ้าโอนเงินไปแล้ว ทำอย่างไรต่อ',
+    body: 'โทรแจ้งธนาคารเพื่ออายัดบัญชีหรือธุรกรรมทันที ยิ่งแจ้งเร็วโอกาสได้เงินคืนยิ่งสูง จากนั้นแจ้งความออนไลน์ผ่านสายด่วน AOC 1441 หรือแจ้งตำรวจไซเบอร์ 1599 และเก็บหลักฐานสลิปโอนเงินกับข้อความสนทนาไว้ให้ครบ อย่าลบทิ้งเด็ดขาด'
+  }
+];
+
+/* ---------------- คำถามแบบทดสอบ ---------------- */
+var QUIZ = [
+  {
+    q: 'คุณได้รับสายอ้างว่าเป็นเจ้าหน้าที่คณะ แจ้งว่าต้องโอนค่ามัดจำทัศนศึกษาต่างประเทศเพิ่มด่วนภายใน 1 ชั่วโมง ไม่เช่นนั้นจะถูกตัดสิทธิ์ สัญญาณอันตรายที่ชัดเจนที่สุดคือข้อใด',
+    options: ['มีการโทรมาแทนที่จะส่งอีเมล', 'การเร่งให้ตัดสินใจโอนเงินภายในเวลาจำกัดมาก', 'เจ้าหน้าที่พูดสำเนียงต่างจังหวัด', 'โทรมาในเวลาทำการปกติ'],
+    correct: 1,
+    explain: 'ความเร่งด่วนที่บีบให้ตัดสินใจเร็วโดยไม่ให้เวลาตรวจสอบ เป็นกลยุทธ์คลาสสิกของมิจฉาชีพ'
+  },
+  {
+    q: 'ผู้โทรขอให้โอนเงินค่าทัศนศึกษาเข้าบัญชีธนาคารส่วนบุคคลของ "เจ้าหน้าที่" แทนบัญชีมหาวิทยาลัย คุณควรทำอย่างไร',
+    options: ['โอนไปก่อนเพราะกลัวไม่ทันเวลา', 'วางสายและติดต่อมหาวิทยาลัยผ่านช่องทางทางการเพื่อตรวจสอบ', 'ขอเลขบัญชีแล้วโอนครึ่งหนึ่งก่อน', 'ถามชื่อเจ้าหน้าที่แล้วโอนตามปกติ'],
+    correct: 1,
+    explain: 'มหาวิทยาลัยจริงจะไม่ให้โอนเงินราชการเข้าบัญชีบุคคลธรรมดาเด็ดขาด นี่คือสัญญาณอันตรายระดับสูงสุด'
+  },
+  {
+    q: 'ผู้โทรพูดว่า "อย่าบอกเพื่อนหรือผู้ปกครองเรื่องนี้ เดี๋ยวจะเสียสิทธิ์" ประโยคนี้บ่งบอกถึงอะไร',
+    options: ['เป็นความลับทางราชการปกติ', 'ความพยายามแยกเหยื่อออกจากคนที่จะช่วยตรวจสอบความจริง', 'เจ้าหน้าที่ใส่ใจความเป็นส่วนตัวของคุณ', 'ระเบียบมหาวิทยาลัยทั่วไป'],
+    correct: 1,
+    explain: 'การขอให้เก็บเป็นความลับคือกลวิธีตัดช่องทางที่เหยื่อจะได้รับคำเตือนจากคนรอบข้าง'
+  },
+  {
+    q: 'ข้อใดคือช่องทางที่ถูกต้องในการตรวจสอบว่าเรื่องที่โทรมาเป็นความจริงหรือไม่',
+    options: ['เชื่อเบอร์โทรที่ขึ้นแคลเลอร์ไอดี', 'ให้ข้อมูลส่วนตัวเพื่อยืนยันตัวตนกับผู้โทร', 'โทรกลับไปที่เบอร์กลางของมหาวิทยาลัยที่หาได้จากเว็บไซต์ทางการเอง', 'ให้เพื่อนที่เคยไปทัศนศึกษาปีก่อนช่วยยืนยัน'],
+    correct: 2,
+    explain: 'ควรใช้เบอร์ที่คุณหาเองจากแหล่งทางการ ไม่ใช่เบอร์หรือช่องทางที่ผู้โทรมาให้มา เพราะอาจเป็นเบอร์ปลอมทั้งกระบวนการ'
+  },
+  {
+    q: 'มิจฉาชีพอ้างว่าเป็น "ระบบเสียงอัตโนมัติของธนาคาร" แล้วขอให้กดยืนยันรหัส OTP ทางโทรศัพท์ คุณควรทำอย่างไร',
+    options: ['กด OTP ตามที่บอกเพราะเป็นระบบธนาคารจริง', 'วางสายทันที เพราะไม่มีหน่วยงานใดขอ OTP ทางโทรศัพท์', 'บอก OTP บางส่วนก่อน', 'ขอเวลาคิด 1 นาทีแล้วบอก OTP'],
+    correct: 1,
+    explain: 'OTP รหัสผ่าน และเลขบัตร คือข้อมูลที่ไม่มีหน่วยงานใดขอผ่านโทรศัพท์ การขอสิ่งเหล่านี้คือสัญญาณมิจฉาชีพชัดเจน'
+  },
+  {
+    q: 'ระหว่างคุยโทรศัพท์ คุณอยากวางสายเพื่อตรวจสอบก่อน แต่ผู้โทรเร่งซ้ำ ๆ ว่า "ต้องตัดสินใจตอนนี้เลย" คุณควรทำอย่างไร',
+    options: ['ยอมตามเพราะผู้โทรพูดหนักแน่น', 'วางสายได้ทันทีโดยไม่ต้องรู้สึกผิด แล้วค่อยตรวจสอบทีหลัง', 'ต่อรองขอเวลาเพิ่มอีก 5 นาที', 'โอนเงินจำนวนน้อยก่อนเพื่อความปลอดภัย'],
+    correct: 1,
+    explain: 'คุณมีสิทธิ์วางสายได้เสมอ ไม่มีเหตุผลที่ถูกต้องใดบังคับให้ตัดสินใจเรื่องเงินภายในไม่กี่วินาที'
+  },
+  {
+    q: 'ถ้าเผลอโอนเงินไปแล้วและเพิ่งรู้ตัวว่าถูกหลอก ขั้นตอนแรกที่ควรทำคือข้อใด',
+    options: ['รอดูสถานการณ์สัก 2-3 วันก่อน', 'โทรแจ้งธนาคารเพื่ออายัดบัญชี/ธุรกรรมทันที และแจ้งความผ่านสายด่วน 1441', 'โทรกลับไปต่อรองกับมิจฉาชีพ', 'ลบหลักฐานการโอนเพื่อไม่ให้เครียด'],
+    correct: 1,
+    explain: 'ยิ่งแจ้งอายัดเร็วเท่าไร โอกาสได้เงินคืนยิ่งสูงขึ้น ควรเก็บหลักฐานสลิปและแชทไว้ให้ครบ ไม่ใช่ลบทิ้ง'
+  },
+  {
+    q: 'เหตุใดหัวข้อ "ค่าทัศนศึกษาต่างประเทศ" จึงมักถูกมิจฉาชีพเลือกใช้เป็นเหยื่อล่อกับนักศึกษา',
+    options: ['เพราะเป็นเรื่องที่ไม่มีใครสนใจ', 'เพราะมีมูลค่าเงินสูง มีเส้นตายชัดเจน และนักศึกษามักกลัวพลาดโอกาส', 'เพราะมหาวิทยาลัยประกาศต่อสาธารณะทุกครั้ง', 'เพราะไม่มีทางตรวจสอบได้เลย'],
+    correct: 1,
+    explain: 'เงินก้อนใหญ่ + เส้นตายที่ชัดเจน + ความกลัวเสียโอกาส คือสูตรที่มิจฉาชีพใช้สร้างความกดดันได้ผลที่สุด'
+  }
+];
+
+/* ---------------- ไอคอน (SVG แบบ inline) ---------------- */
+function iconShield(){ return '<svg viewBox="0 0 48 48" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 5 L40 11 V22 C40 33 33 40 24 43 C15 40 8 33 8 22 V11 Z"/><path d="M17 24 L22 29 L32 18"/></svg>'; }
+function iconWarning(){ return '<svg viewBox="0 0 48 48" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 6 L44 40 H4 Z"/><line x1="24" y1="18" x2="24" y2="27"/><circle cx="24" cy="33" r="1.2" fill="currentColor" stroke="none"/></svg>'; }
+function iconCheck(){ return '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12 L10 18 L20 6"/></svg>'; }
+function iconCross(){ return '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6 L18 18 M18 6 L6 18"/></svg>'; }
+function iconPhone(){ return '<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.9 21 3 13.1 3 3.9c0-.6.4-1 1-1h3.4c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.4 0 .8-.2 1L6.6 10.8Z"/></svg>'; }
+function iconPhoneDown(){ return '<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" style="transform:rotate(135deg)"><path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.9 21 3 13.1 3 3.9c0-.6.4-1 1-1h3.4c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.4 0 .8-.2 1L6.6 10.8Z"/></svg>'; }
+function iconPerson(){ return '<svg viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="2"><circle cx="24" cy="17" r="8"/><path d="M8 40c2-8 8-13 16-13s14 5 16 13"/></svg>'; }
+
+/* ---------------- สถานะแอป (memory เท่านั้น) ---------------- */
+var state = {
+  screen: 'home',
+  userName: '',
+  lessonPage: 0,
+  quizIndex: 0,
+  quizAnswers: [],
+  score: 0,
+  callTriggered: false,
+  callTimerStarted: false,
+  callTimeoutId: null,
+  pendingFinalResult: false,
+  callOutcome: null,
+  incomingNumber: '',
+  conversationHistory: [],
+  callStartTime: 0,
+  callTimerId: null,
+  emptyListenCount: 0
+};
+
+/* ---------------- ยูทิลิตี้ ---------------- */
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+function sleep(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+function supportsSpeech(){
+  return !!(window.SpeechRecognition || window.webkitSpeechRecognition) && ('speechSynthesis' in window);
+}
+function randomPhone(){
+  var prefixes = ['081','082','083','084','085','086','087','088','089','090','091','092','093','094','095','096','097','098','099'];
+  var p = prefixes[Math.floor(Math.random()*prefixes.length)];
+  var mid = String(Math.floor(100+Math.random()*900));
+  var last = String(Math.floor(1000+Math.random()*9000));
+  return p+'-'+mid+'-'+last;
+}
+function heuristicTransferConfirmed(text){
+  var kws = ['ตกลงโอน','โอนให้','โอนเลย','โอนตอนนี้','จะโอน','ได้ค่ะโอน','ได้ครับโอน','เดี๋ยวโอน','โอนไปแล้ว','โอนก็ได้'];
+  for(var i=0;i<kws.length;i++){ if(text.indexOf(kws[i])!==-1) return true; }
+  return false;
+}
+
+/* ---------------- เสียง: ริงโทนสังเคราะห์ (แทนการสั่น) ---------------- */
+var audioCtx = null;
+var ringInterval = null;
+function unlockAudio(){
+  if(!audioCtx){
+    var Ctx = window.AudioContext || window.webkitAudioContext;
+    if(Ctx) audioCtx = new Ctx();
+  }
+  if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+}
+function tryEnterFullscreen(){
+  // ซ่อนแถบ URL/แท็บของเบราว์เซอร์ทั้งหมด — ใช้ได้บน Chrome (Android) เพราะ Fullscreen API
+  // ทำงานเต็มรูปแบบที่นั่น; Safari บน iPhone ไม่รองรับ Fullscreen API กับ element ทั่วไป
+  // (รองรับเฉพาะ <video>) จึงไม่มีทางสั่งซ่อนแถบ URL ด้วยโค้ดได้บนเครื่องนั้น
+  var el = document.documentElement;
+  var req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+  if(req){
+    try{
+      var p = req.call(el);
+      if(p && p.catch) p.catch(function(){});
+    }catch(e){}
+  }
+}
+function playTone(startAt, duration){
+  if(!audioCtx) return;
+  var osc1 = audioCtx.createOscillator();
+  var osc2 = audioCtx.createOscillator();
+  var gain = audioCtx.createGain();
+  osc1.frequency.value = 480; osc2.frequency.value = 620;
+  osc1.type = 'sine'; osc2.type = 'sine';
+  gain.gain.setValueAtTime(0, startAt);
+  gain.gain.linearRampToValueAtTime(0.9, startAt+0.05);
+  gain.gain.setValueAtTime(0.9, startAt+duration-0.08);
+  gain.gain.linearRampToValueAtTime(0, startAt+duration);
+  osc1.connect(gain); osc2.connect(gain); gain.connect(audioCtx.destination);
+  osc1.start(startAt); osc2.start(startAt);
+  osc1.stop(startAt+duration); osc2.stop(startAt+duration);
+}
+function ringPatternPlay(){
+  if(!audioCtx) return;
+  var now = audioCtx.currentTime;
+  playTone(now, 0.9);
+  playTone(now+1.0, 0.9);
+}
+function startRingtone(){
+  if(!audioCtx) return;
+  stopRingtone();
+  ringPatternPlay();
+  ringInterval = setInterval(ringPatternPlay, 4000);
+  if('vibrate' in navigator){ try{ navigator.vibrate([600,300,600,300,600,300,600]); }catch(e){} }
+}
+function stopRingtone(){
+  if(ringInterval){ clearInterval(ringInterval); ringInterval = null; }
+}
+
+/* ---------------- เสียงพูด: TTS / STT ---------------- */
+function speak(text){
+  return new Promise(function(resolve){
+    if(!('speechSynthesis' in window)){ resolve(); return; }
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = 'th-TH'; u.rate = 1; u.pitch = 1;
+    u.onend = function(){ resolve(); };
+    u.onerror = function(){ resolve(); };
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  });
+}
+var recognition = null;
+function listenOnce(){
+  return new Promise(function(resolve){
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(!SR){ resolve({ text:'', error:'unsupported' }); return; }
+    var rec = new SR();
+    rec.lang = 'th-TH'; rec.continuous = false; rec.interimResults = false; rec.maxAlternatives = 1;
+    var done = false;
+    rec.onresult = function(e){
+      done = true;
+      var t = e.results && e.results[0] && e.results[0][0] ? e.results[0][0].transcript : '';
+      resolve({ text:t, error:null });
+    };
+    rec.onerror = function(e){ if(!done){ done = true; resolve({ text:'', error:(e && e.error) || 'unknown' }); } };
+    rec.onend = function(){ if(!done){ done = true; resolve({ text:'', error:null }); } };
+    try{ rec.start(); } catch(e){ resolve({ text:'', error:'start-failed' }); }
+    recognition = rec;
+  });
+}
+
+/* ---------------- บทเปิด + system prompt ของมิจฉาชีพจำลอง ---------------- */
+function openingLine(name){
+  var n = name ? ('น้อง'+name) : 'นักศึกษา';
+  return 'สวัสดีค่ะ '+n+' ใช่ไหมคะ';
+}
+function buildSystemPrompt(name){
+  var n = name ? ('น้อง'+name) : 'นักศึกษาคนหนึ่ง';
+  return 'คุณกำลังสวมบทบาทเป็นมิจฉาชีพที่โทรหา'+n+' โดยอ้างตัวเป็นเจ้าหน้าที่ฝ่ายกิจการนักศึกษา แจ้งว่ามีปัญหาการชำระค่ามัดจำทัศนศึกษาต่างประเทศ และต้องให้โอนเงินเพิ่มด่วนก่อนหมดสิทธิ์ที่นั่ง นี่คือสถานการณ์จำลองเพื่อการศึกษา\n\n'+
+    'คุณเพิ่งเปิดบทสนทนาด้วยการทักทายสั้น ๆ ไปแล้วว่า "สวัสดีค่ะ '+n+' ใช่ไหมคะ" ข้อความของผู้ใช้ที่ได้รับตอนนี้คือคำตอบต่อคำทักทายนั้น (เช่น "ใช่ค่ะ" หรือคำถามกลับ) ให้คุณพูดต่อในประโยคถัดไปด้วยการแนะนำตัวสั้น ๆ ว่าโทรมาจากฝ่ายกิจการนักศึกษา แล้วเข้าเรื่องค่ามัดจำทัศนศึกษาต่างประเทศที่ยังไม่เข้าและใกล้หมดสิทธิ์ที่นั่ง\n\n'+
+    'กติกาที่ต้องทำตามอย่างเคร่งครัด:\n'+
+    '- ห้ามพูดจาหยาบคายหรือข่มขู่รุนแรง ให้ใช้น้ำเสียงสุภาพแต่เร่งเร้า สร้างความเร่งด่วนแบบแนบเนียน\n'+
+    '- ห้ามขอข้อมูลอ่อนไหวจริงเช่น OTP รหัสผ่าน เลขบัตรประชาชน หรือเลขบัตรเครดิตโดยตรง ให้เน้นโน้มน้าวให้ "โอนเงิน" เข้าบัญชีที่อ้างว่าเป็นบัญชีมหาวิทยาลัย/เจ้าหน้าที่แทน\n'+
+    '- ตอบสั้นกระชับ 1-3 ประโยคต่อครั้ง เหมือนบทสนทนาโทรศัพท์จริง ไม่ใช่การบรรยายยาว\n'+
+    '- ถ้าผู้ใช้แสดงท่าทีตกลงโอนเงินอย่างชัดเจน (เช่น บอกว่าจะโอนให้ ตกลงโอน หรือถามเลขบัญชีเพื่อโอน) ให้ตั้งค่า status เป็น "transfer_confirmed"\n'+
+    '- ถ้ายังไม่ชัดเจนหรือกำลังสนทนาต่อ ให้ตั้งค่า status เป็น "continue"\n'+
+    '- ห้ามหลุดบทบาท ห้ามบอกว่าเป็น AI หรือเป็นการจำลองเด็ดขาด\n\n'+
+    'ตอบกลับเป็น JSON เท่านั้น ห้ามมีข้อความอื่นนอกเหนือจาก JSON รูปแบบนี้:\n'+
+    '{"reply": "ข้อความที่จะพูด", "status": "continue หรือ transfer_confirmed"}';
+}
+async function callScammerAI(history){
+  var res = await fetch(ANTHROPIC_API_URL, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-api-key': ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: ANTHROPIC_MODEL,
+      max_tokens: 180,
+      system: buildSystemPrompt(state.userName),
+      messages: history
+    })
+  });
+  if(!res.ok){ throw new Error('API error '+res.status); }
+  var data = await res.json();
+  var block = (data.content||[]).filter(function(b){ return b.type==='text'; })[0];
+  var raw = block ? block.text : '{}';
+  var parsed;
+  try{ parsed = JSON.parse(raw); }
+  catch(e){
+    var m = raw.match(/\{[\s\S]*\}/);
+    parsed = m ? JSON.parse(m[0]) : { reply: raw, status: 'continue' };
+  }
+  return parsed;
+}
+
+/* ---------------- ตัวจับเวลาในสาย ---------------- */
+function startCallTimer(){
+  clearCallTimer();
+  state.callStartTime = Date.now();
+  state.callTimerId = setInterval(updateCallTimerDisplay, 1000);
+  updateCallTimerDisplay();
+}
+function updateCallTimerDisplay(){
+  var el = document.getElementById('call-timer');
+  if(!el) return;
+  var secs = Math.floor((Date.now()-state.callStartTime)/1000);
+  var m = String(Math.floor(secs/60)); if(m.length<2) m='0'+m;
+  var s = String(secs%60); if(s.length<2) s='0'+s;
+  el.textContent = m+':'+s;
+}
+function clearCallTimer(){
+  if(state.callTimerId){ clearInterval(state.callTimerId); state.callTimerId=null; }
+}
+function setStatus(text){
+  var el = document.getElementById('call-status');
+  if(el) el.textContent = text;
+}
+
+/* ---------------- ตรรกะสายโทรเข้าระหว่างควิซ ---------------- */
+function maybeScheduleCall(){
+  if(state.quizIndex===4 && !state.callTimerStarted && !state.callTriggered){
+    state.callTimerStarted = true;
+    var delay = 3000 + Math.random()*17000;
+    state.callTimeoutId = setTimeout(function(){
+      if(state.screen==='quiz' && !state.callTriggered){ triggerIncomingCall(); }
+    }, delay);
+  }
+}
+function triggerIncomingCall(){
+  state.callTriggered = true;
+  state.incomingNumber = randomPhone();
+  state.screen = 'incoming-call';
+  render();
+  startRingtone();
+}
+function acceptCall(){
+  stopRingtone();
+  state.screen = 'call';
+  state.conversationHistory = [];
+  state.emptyListenCount = 0;
+  render();
+  startCallTimer();
+  (function(){
+    setStatus('กำลังเชื่อมสาย...');
+    speak(openingLine(state.userName)).then(function(){
+      if(state.screen!=='call') return;
+      startListenLoop();
+    });
+  })();
+}
+function startListenLoop(){
+  setStatus('กำลังฟัง');
+  listenOnce().then(function(result){
+    if(state.screen!=='call') return;
+    handleListenResult(result);
+  });
+}
+function micDiagnosisMessage(errorCode){
+  if(errorCode==='unsupported') return 'เบราว์เซอร์นี้ไม่รองรับการรู้จำเสียง ลองเปิดด้วย Chrome หรือ Safari เวอร์ชันล่าสุด';
+  if(errorCode==='not-allowed' || errorCode==='service-not-allowed'){
+    return 'เข้าไมโครโฟนไม่ได้ — มักเกิดเพราะเปิดไฟล์นี้ผ่านตัวเปิดไฟล์ดาวน์โหลดของเบราว์เซอร์ (content://) ซึ่งเบราว์เซอร์ถือว่าไม่ปลอดภัยพอให้ใช้ไมค์ ลองเปิดผ่านลิงก์เว็บ (http/https) แทน';
+  }
+  if(errorCode==='audio-capture') return 'หาไมโครโฟนของเครื่องไม่เจอ ตรวจสอบว่าไม่มีแอปอื่นใช้ไมค์อยู่';
+  if(errorCode==='network') return 'เชื่อมต่อบริการรู้จำเสียงไม่ได้ ลองตรวจสอบอินเทอร์เน็ต';
+  return 'ไม่สามารถใช้ไมโครโฟนได้ในตอนนี้';
+}
+function handleListenResult(result){
+  var text = result && result.text ? result.text : '';
+  var error = result ? result.error : null;
+  var hardErrors = ['not-allowed','service-not-allowed','audio-capture','unsupported'];
+  if(!text || !text.trim()){
+    if(error && hardErrors.indexOf(error)!==-1){
+      setStatus(micDiagnosisMessage(error)+' — กดวางสายแล้วลองเปิดผ่านลิงก์เว็บแทน');
+      return; // หยุดวนฟังซ้ำ เพราะเป็นปัญหาสิทธิ์/แพลตฟอร์ม ไม่ใช่แค่ไม่มีเสียง
+    }
+    state.emptyListenCount++;
+    if(state.emptyListenCount >= 3){
+      setStatus('ไม่ได้ยินเสียงติดต่อกันหลายครั้ง — ถ้าเปิดไฟล์นี้จากหน้าดาวน์โหลดของเบราว์เซอร์ ให้ลองเปิดผ่านลิงก์เว็บ (http/https) แทน แล้วกดวางสายเพื่อเริ่มใหม่');
+      return;
+    }
+    setStatus('ไม่ได้ยินเสียงค่ะ ลองพูดอีกครั้ง');
+    sleep(1200).then(function(){ if(state.screen==='call') startListenLoop(); });
+    return;
+  }
+  state.emptyListenCount = 0;
+  handleUserUtterance(text);
+}
+async function handleUserUtterance(text){
+  if(state.screen!=='call') return;
+  if(heuristicTransferConfirmed(text)){ resolveCall('transferred'); return; }
+  state.conversationHistory.push({ role:'user', content:text });
+  setStatus('กำลังประมวลผล');
+  try{
+    var parsed = await callScammerAI(state.conversationHistory);
+    if(state.screen!=='call') return;
+    state.conversationHistory.push({ role:'assistant', content: JSON.stringify(parsed) });
+    if(parsed.status==='transfer_confirmed'){ resolveCall('transferred'); return; }
+    setStatus('กำลังพูด');
+    await speak(parsed.reply || 'ขอโทษค่ะ ช่วยพูดอีกครั้งได้ไหมคะ');
+    if(state.screen!=='call') return;
+    startListenLoop();
+  }catch(err){
+    setStatus('เชื่อมต่อ AI ไม่สำเร็จ (ตรวจสอบ API key ในโค้ด) — กดวางสายเพื่อลองใหม่');
+  }
+}
+function resolveCall(outcome){
+  clearCallTimer();
+  stopRingtone();
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+  if(recognition){ try{ recognition.abort(); }catch(e){} recognition = null; }
+  state.callOutcome = outcome;
+  state.callTriggered = true;
+  if(outcome==='declined') state.screen = 'decline-result';
+  else if(outcome==='hungup') state.screen = 'hangup-result';
+  else state.screen = 'transfer-result';
+  render();
+}
+
+/* ---------------- ตรรกะควิซ ---------------- */
+function selectAnswer(i){
+  if(state.quizAnswers[state.quizIndex]) return;
+  var q = QUIZ[state.quizIndex];
+  var correct = i===q.correct;
+  state.quizAnswers[state.quizIndex] = { selected:i, correct:correct };
+  if(correct) state.score++;
+  render();
+}
+function nextQuestion(){
+  var isLast = state.quizIndex === QUIZ.length-1;
+  if(isLast){ goToResultsOrForceCall(); return; }
+  state.quizIndex++;
+  maybeScheduleCall();
+  render();
+}
+function goToResultsOrForceCall(){
+  if(!state.callTriggered){
+    clearTimeout(state.callTimeoutId);
+    state.pendingFinalResult = true;
+    triggerIncomingCall();
+  } else {
+    showQuizResult();
+  }
+}
+function showQuizResult(){ state.screen = 'quiz-result'; render(); }
+
+/* ---------------- อื่น ๆ ---------------- */
+function requestMic(){
+  if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+    navigator.mediaDevices.getUserMedia({ audio:true }).then(function(stream){
+      stream.getTracks().forEach(function(t){ t.stop(); });
+    }).catch(function(){});
+  }
+}
+function restart(){
+  clearTimeout(state.callTimeoutId);
+  clearCallTimer();
+  stopRingtone();
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+  state.screen='home'; state.lessonPage=0; state.quizIndex=0; state.quizAnswers=[];
+  state.score=0; state.callTriggered=false; state.callTimerStarted=false; state.callTimeoutId=null;
+  state.pendingFinalResult=false; state.callOutcome=null; state.incomingNumber=''; state.conversationHistory=[];
+  render();
+}
+
+/* ---------------- หน้าจอแต่ละแบบ ---------------- */
+function screenHome(){
+  var warn = supportsSpeech() ? '' : '<p class="home-warning">เบราว์เซอร์นี้อาจไม่รองรับการสนทนาด้วยเสียงเต็มรูปแบบ แนะนำให้ใช้ Chrome (Android) หรือ Safari เวอร์ชันล่าสุด (iPhone)</p>';
+  return '' +
+    '<div class="screen home-screen">' +
+      '<div class="home-mark">'+iconShield()+'</div>' +
+      '<h1 class="home-title">รู้ทันมิจฉาชีพ</h1>' +
+      '<p class="home-subtitle">ก่อนโอนเงินค่าทัศนศึกษาต่างประเทศ ลองเช็กว่าคุณจับสัญญาณอันตรายทันไหม</p>' +
+      '<label class="field-label" for="name-input">ชื่อของคุณ (ไม่บังคับ)</label>' +
+      '<input id="name-input" class="text-input" type="text" placeholder="เช่น พลอย" maxlength="30" value="'+escapeHtml(state.userName)+'" />' +
+      '<p class="home-note">ระหว่างทำแบบทดสอบ ระบบจะจำลองสายโทรเข้าและขอสิทธิ์ไมโครโฟน เพื่อให้คุณฝึกคุยโต้ตอบด้วยเสียงจริง</p>' +
+      warn +
+      '<button class="btn-primary" data-action="start">เริ่มเรียนรู้</button>' +
+    '</div>';
+}
+function screenLesson(){
+  var total = LESSONS.length, idx = state.lessonPage, item = LESSONS[idx];
+  var dots = LESSONS.map(function(_,i){ return '<span class="dot'+(i===idx?' active':'')+'"></span>'; }).join('');
+  var isLast = idx===total-1;
+  return '' +
+    '<div class="screen">' +
+      '<div class="topbar"><span class="topbar-label">บทเรียน</span><span class="topbar-count">'+(idx+1)+'/'+total+'</span></div>' +
+      '<div class="dots">'+dots+'</div>' +
+      '<h2 class="lesson-title">'+escapeHtml(item.title)+'</h2>' +
+      '<p class="lesson-body">'+escapeHtml(item.body)+'</p>' +
+      '<div class="nav-row">' +
+        (idx>0 ? '<button class="btn-secondary" data-action="lesson-prev">ย้อนกลับ</button>' : '') +
+        '<button class="btn-primary" data-action="'+(isLast?'lesson-start-quiz':'lesson-next')+'">'+(isLast?'เริ่มทำแบบทดสอบ':'ถัดไป')+'</button>' +
+      '</div>' +
+    '</div>';
+}
+function screenQuiz(){
+  var total = QUIZ.length, idx = state.quizIndex, q = QUIZ[idx];
+  var answer = state.quizAnswers[idx], answered = !!answer;
+  var optionsHtml = q.options.map(function(opt,i){
+    var cls = 'option';
+    if(answered){
+      if(i===q.correct) cls += ' correct';
+      else if(i===answer.selected) cls += ' wrong';
+      cls += ' disabled';
+    }
+    return '<button class="'+cls+'" data-action="select-option" data-idx="'+i+'"'+(answered?' disabled':'')+'>'+escapeHtml(opt)+'</button>';
+  }).join('');
+  var progressPct = ((idx + (answered?1:0)) / total) * 100;
+  var extra = answered ?
+    ('<div class="explain-box"><p>'+escapeHtml(q.explain)+'</p></div>' +
+     '<button class="btn-primary" data-action="next-question">'+(idx===total-1?'ดูผลคะแนน':'ข้อถัดไป')+'</button>') : '';
+  return '' +
+    '<div class="screen">' +
+      '<div class="topbar"><span class="topbar-label">แบบทดสอบ</span><span class="topbar-count">ข้อ '+(idx+1)+'/'+total+'</span></div>' +
+      '<div class="progress-bar"><div class="progress-fill" style="width:'+progressPct+'%"></div></div>' +
+      '<h2 class="quiz-question">'+escapeHtml(q.q)+'</h2>' +
+      '<div class="options">'+optionsHtml+'</div>' +
+      extra +
+    '</div>';
+}
+function screenIncomingCall(){
+  return '' +
+    '<div class="screen call-screen">' +
+      '<div class="call-top"><span class="call-label">สายเรียกเข้า</span></div>' +
+      '<div class="avatar-ring">'+iconPerson()+'</div>' +
+      '<h2 class="caller-name">ไม่ทราบชื่อ</h2>' +
+      '<p class="caller-number">'+state.incomingNumber+'</p>' +
+      '<div class="call-actions">' +
+        '<div class="call-action-col"><button class="call-btn decline" data-action="decline-call">'+iconCross()+'</button><span>ปฏิเสธ</span></div>' +
+        '<div class="call-action-col"><button class="call-btn accept" data-action="accept-call">'+iconPhone()+'</button><span>รับสาย</span></div>' +
+      '</div>' +
+    '</div>';
+}
+function screenCall(){
+  return '' +
+    '<div class="screen call-screen">' +
+      '<div class="call-top"><span class="call-label">กำลังสนทนา</span></div>' +
+      '<div class="avatar-ring small">'+iconPerson()+'</div>' +
+      '<h2 class="caller-name">ไม่ทราบชื่อ</h2>' +
+      '<p class="call-timer" id="call-timer">00:00</p>' +
+      '<p class="call-status" id="call-status">กำลังเชื่อมสาย...</p>' +
+      '<div class="call-actions single">' +
+        '<div class="call-action-col"><button class="call-btn hangup" data-action="hangup-call">'+iconPhoneDown()+'</button><span>วางสาย</span></div>' +
+      '</div>' +
+    '</div>';
+}
+function screenCallResult(kind){
+  var tone, icon, title, body;
+  if(kind==='decline'){
+    tone='safe'; icon=iconShield(); title='ตัดสินใจถูกต้อง!';
+    body='คุณปฏิเสธสายที่มีสัญญาณอันตรายได้ตั้งแต่ต้น นี่คือการตอบสนองที่ปลอดภัยที่สุดเมื่อเจอสายแปลกที่เร่งให้โอนเงิน';
+  } else if(kind==='hangup'){
+    tone='safe'; icon=iconShield(); title='วางสายได้ทันเวลา';
+    body='แม้จะรับสายไปก่อน แต่คุณสังเกตสัญญาณอันตรายระหว่างคุยได้ และตัดสินใจวางสายก่อนเสียเงิน';
+  } else {
+    tone='danger'; icon=iconWarning(); title='คุณเพิ่งโอนเงินไปแล้ว (สถานการณ์จำลอง)';
+    body='ในสถานการณ์จริง เงินก้อนนี้อาจสูญเปล่า สิ่งที่พลาดไปคือการไม่หยุดตรวจสอบก่อนโอน แม้จะถูกเร่งและอ้างว่าเป็นเรื่องด่วนแค่ไหนก็ตาม';
+  }
+  var steps = kind==='transfer' ?
+    ('<div class="steps-box"><p class="steps-title">ถ้าเกิดขึ้นจริง ให้ทำทันที</p><ol>' +
+      '<li>โทรแจ้งธนาคารเพื่ออายัดบัญชี/ธุรกรรมทันที</li>' +
+      '<li>แจ้งความออนไลน์ที่สายด่วน AOC 1441</li>' +
+      '<li>เก็บสลิปโอนเงินและแชทไว้เป็นหลักฐาน</li>' +
+    '</ol></div>') : '';
+  var btnLabel = state.pendingFinalResult ? 'ดูผลคะแนนแบบทดสอบ' : 'กลับไปทำแบบทดสอบต่อ';
+  return '' +
+    '<div class="screen result-screen tone-'+tone+'">' +
+      '<div class="result-icon">'+icon+'</div>' +
+      '<h2 class="result-title">'+title+'</h2>' +
+      '<p class="result-body">'+body+'</p>' +
+      steps +
+      '<button class="btn-primary" data-action="continue-result">'+btnLabel+'</button>' +
+    '</div>';
+}
+function screenQuizResult(){
+  var total = QUIZ.length, nameGreet = state.userName ? escapeHtml(state.userName)+' ' : '';
+  var reviewHtml = QUIZ.map(function(q,i){
+    var a = state.quizAnswers[i], ok = a && a.correct;
+    return '<div class="review-item '+(ok?'ok':'bad')+'">' +
+      '<div class="review-icon">'+(ok?iconCheck():iconCross())+'</div>' +
+      '<div class="review-text"><p class="review-q">'+escapeHtml(q.q)+'</p><p class="review-explain">'+escapeHtml(q.explain)+'</p></div>' +
+    '</div>';
+  }).join('');
+  var callOutcomeText = 'ไม่มีการทดสอบสายโทรเข้าในรอบนี้';
+  if(state.callOutcome==='declined') callOutcomeText = 'ปฏิเสธสายหลอกลวงได้ถูกต้อง';
+  else if(state.callOutcome==='hungup') callOutcomeText = 'วางสายได้ทันเวลาระหว่างสนทนา';
+  else if(state.callOutcome==='transferred') callOutcomeText = 'โอนเงินไปแล้วในสถานการณ์จำลอง — ควรทบทวนสัญญาณอันตราย';
+  return '' +
+    '<div class="screen quizresult-screen">' +
+      '<p class="score-label">'+nameGreet+'ทำแบบทดสอบเสร็จแล้ว</p>' +
+      '<div class="score-circle"><span>'+state.score+'</span><small>/'+total+'</small></div>' +
+      '<div class="callout-box"><p class="callout-label">ผลการรับมือสายโทรเข้า</p><p class="callout-text">'+callOutcomeText+'</p></div>' +
+      '<div class="review-list">'+reviewHtml+'</div>' +
+      '<div class="hotline-box">' +
+        '<p class="hotline-title">สายด่วนที่ควรรู้จักไว้</p>' +
+        '<div class="hotline-row"><span>AOC ศูนย์ปฏิบัติการแก้ไขปัญหาอาชญากรรมทางเทคโนโลยี</span><strong>1441</strong></div>' +
+        '<div class="hotline-row"><span>ตำรวจไซเบอร์</span><strong>1599</strong></div>' +
+      '</div>' +
+      '<button class="btn-primary" data-action="restart">เริ่มใหม่อีกครั้ง</button>' +
+    '</div>';
+}
+
+/* ---------------- ตัวจัดการ render หลัก ---------------- */
+var app = document.getElementById('app');
+var frame = document.getElementById('phone-frame');
+function render(){
+  var isDark = (state.screen==='incoming-call' || state.screen==='call');
+  frame.classList.toggle('dark', isDark);
+  var html = '';
+  switch(state.screen){
+    case 'home': html = screenHome(); break;
+    case 'lesson': html = screenLesson(); break;
+    case 'quiz': html = screenQuiz(); break;
+    case 'incoming-call': html = screenIncomingCall(); break;
+    case 'call': html = screenCall(); break;
+    case 'decline-result': html = screenCallResult('decline'); break;
+    case 'hangup-result': html = screenCallResult('hangup'); break;
+    case 'transfer-result': html = screenCallResult('transfer'); break;
+    case 'quiz-result': html = screenQuizResult(); break;
+  }
+  app.innerHTML = html;
+}
+
+/* ---------------- การจัดการ event ---------------- */
+app.addEventListener('click', function(e){
+  var el = e.target.closest('[data-action]');
+  if(!el) return;
+  var action = el.dataset.action;
+  switch(action){
+    case 'start':
+      unlockAudio();
+      requestMic();
+      tryEnterFullscreen();
+      state.screen = 'lesson';
+      render();
+      break;
+    case 'lesson-prev':
+      state.lessonPage = Math.max(0, state.lessonPage-1);
+      render();
+      break;
+    case 'lesson-next':
+      state.lessonPage = Math.min(LESSONS.length-1, state.lessonPage+1);
+      render();
+      break;
+    case 'lesson-start-quiz':
+      state.screen = 'quiz'; state.quizIndex = 0;
+      render();
+      break;
+    case 'select-option':
+      selectAnswer(Number(el.dataset.idx));
+      break;
+    case 'next-question':
+      nextQuestion();
+      break;
+    case 'decline-call':
+      resolveCall('declined');
+      break;
+    case 'accept-call':
+      acceptCall();
+      break;
+    case 'hangup-call':
+      if(state.screen==='call') resolveCall('hungup');
+      break;
+    case 'continue-result':
+      if(state.pendingFinalResult){ state.pendingFinalResult = false; showQuizResult(); }
+      else { state.screen = 'quiz'; render(); }
+      break;
+    case 'restart':
+      restart();
+      break;
+  }
+});
+app.addEventListener('input', function(e){
+  if(e.target && e.target.id==='name-input'){ state.userName = e.target.value.trim(); }
+});
+
+/* ---------------- เริ่มต้น ---------------- */
+render();
+})();
+</script>
+</body>
+</html>
