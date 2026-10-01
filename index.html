@@ -216,14 +216,25 @@
 
 /* =========================================================
    ตั้งค่าก่อนใช้งานจริง
-   ใส่ Anthropic API key ของคุณแทนที่ข้อความด้านล่าง
-   ไฟล์นี้เรียก Anthropic API ตรงจากเบราว์เซอร์ (client-side)
-   เหมาะสำหรับสาธิต/นำเสนอในชั้นเรียนเท่านั้น — ห้ามแจกไฟล์นี้
-   ให้คนอื่นแบบเปิดเผย เพราะ API key จะถูกฝังอยู่ในโค้ดที่มองเห็นได้
+   ***ห้ามใส่ API key จริงตรงนี้แล้ว commit ขึ้น GitHub เด็ดขาด***
+   เพราะ repo นี้เป็น public — ใครก็มองเห็นค่าที่ commit ไว้ได้ และ
+   Anthropic เองก็มีระบบสแกนหาคีย์ที่หลุดใน public repo แล้ว revoke
+   ทิ้งอัตโนมัติ (เกิดขึ้นแล้ว 2 ครั้งกับไฟล์นี้)
+   แทนที่จะฝังคีย์ในโค้ด แอปจะถาม API key จากผู้ใช้ตอนรับสาย
+   (ฟังก์ชัน ensureApiKey) แล้วเก็บไว้ในตัวแปรของหน้าเว็บนี้ชั่วคราว
+   เท่านั้น — ไม่ถูกบันทึกลงไฟล์ ไม่ถูกส่งไปที่ใดนอกจาก Anthropic API
+   โดยตรง และหายไปทันทีที่ปิด/รีโหลดหน้า
    ========================================================= */
-var ANTHROPIC_API_KEY = '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';
+var ANTHROPIC_API_KEY = '';
 var ANTHROPIC_MODEL = 'claude-sonnet-5'; // เปลี่ยนเป็น 'claude-haiku-4-5-20251001' ได้ถ้าต้องการความเร็วมากกว่า
 var ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
+function ensureApiKey(){
+  if(!ANTHROPIC_API_KEY){
+    var k = window.prompt('ใส่ Anthropic API key สำหรับสาธิต (ขึ้นต้นด้วย sk-ant-api03-)\n\nคีย์นี้จะถูกเก็บไว้ในหน่วยความจำของเบราว์เซอร์นี้เท่านั้น ไม่ถูกบันทึกลงไฟล์หรือส่งขึ้น GitHub และจะหายไปเมื่อปิด/รีโหลดหน้า', '');
+    if(k && k.trim()) ANTHROPIC_API_KEY = k.trim();
+  }
+  return !!ANTHROPIC_API_KEY;
+}
 
 /* ---------------- เนื้อหาบทเรียน ---------------- */
 var LESSONS = [
@@ -535,6 +546,10 @@ function acceptCall(){
   state.emptyListenCount = 0;
   render();
   startCallTimer();
+  if(!ensureApiKey()){
+    setStatus('ยังไม่ได้ใส่ API key — กดวางสายแล้วรับสายใหม่เพื่อใส่คีย์อีกครั้ง');
+    return;
+  }
   (function(){
     setStatus('กำลังเชื่อมสาย...');
     speak(openingLine(state.userName)).then(function(){
@@ -595,7 +610,8 @@ async function handleUserUtterance(text){
     if(state.screen!=='call') return;
     startListenLoop();
   }catch(err){
-    setStatus('เชื่อมต่อ AI ไม่สำเร็จ (ตรวจสอบ API key ในโค้ด) — กดวางสายเพื่อลองใหม่');
+    ANTHROPIC_API_KEY = ''; // เผื่อคีย์ผิด/หมดอายุ ให้ถามใหม่ในการรับสายครั้งถัดไป
+    setStatus('เชื่อมต่อ AI ไม่สำเร็จ (API key อาจไม่ถูกต้อง) — กดวางสายแล้วรับสายใหม่เพื่อใส่คีย์อีกครั้ง');
   }
 }
 function resolveCall(outcome){
