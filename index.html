@@ -229,7 +229,7 @@
    (ดูวิธีสร้าง Worker ในไฟล์ worker.js ที่แนบมาในโฟลเดอร์เดียวกัน)
    ========================================================= */
 var WORKER_URL = 'https://scam-awareness-proxy.charlee-qq.workers.dev';
-var ANTHROPIC_MODEL = 'claude-sonnet-5'; // เปลี่ยนเป็น 'claude-haiku-4-5-20251001' ได้ถ้าต้องการความเร็วมากกว่า
+var ANTHROPIC_MODEL = 'claude-haiku-4-5-20251001'; // ใช้ Haiku เพราะเร็วกว่า Sonnet มากสำหรับคำตอบสั้น ๆ แบบนี้ — ความแม่นยำของบทสนทนาสั้นระดับนี้ไม่ต่างกันมาก
 
 /* ---------------- เนื้อหาบทเรียน ---------------- */
 var LESSONS = [
@@ -473,7 +473,7 @@ async function callScammerAI(history){
     },
     body: JSON.stringify({
       model: ANTHROPIC_MODEL,
-      max_tokens: 180,
+      max_tokens: 110,
       system: buildSystemPrompt(state.userName),
       messages: history
     })
@@ -583,23 +583,48 @@ function handleListenResult(result){
   state.emptyListenCount = 0;
   handleUserUtterance(text);
 }
-async function handleUserUtterance(text){
+/* เสียงอืมอา/คำเกริ่นสั้น ๆ ไว้พูดคั่นระหว่างรอ AI ประมวลผล — เลียนแบบจังหวะ
+   การพูดของคนจริงที่มักมีช่วงอึกอัก/คิดก่อนตอบ 1-2 วินาที แทนที่จะปล่อยให้
+   เงียบสนิทแล้วค่อยตอบทันที ซึ่งเป็นสิ่งที่ทำให้รู้สึกว่า "หุ่นยนต์" ชัดเจน
+   กว่าการมีเสียงอืมอาคั่น (เทคนิคเดียวกับที่ใช้ในระบบโทรศัพท์ AI จริง ๆ เพื่อ
+   กลบ latency ของการประมวลผล) */
+var FILLER_PHRASES = ['เอ่อ...', 'อืม...', 'ค่ะ...', 'สักครู่นะคะ...'];
+function handleUserUtterance(text){
   if(state.screen!=='call') return;
   if(heuristicTransferConfirmed(text)){ resolveCall('transferred'); return; }
   state.conversationHistory.push({ role:'user', content:text });
   setStatus('กำลังประมวลผล');
-  try{
-    var parsed = await callScammerAI(state.conversationHistory);
+
+  var aiDone = false;
+  var fillerCount = 0;
+  var fillerTimerId = null;
+  function scheduleFiller(){
+    fillerTimerId = setTimeout(function(){
+      if(aiDone || state.screen!=='call') return;
+      fillerCount++;
+      var phrase = FILLER_PHRASES[Math.floor(Math.random()*FILLER_PHRASES.length)];
+      speak(phrase); // ไม่ await — ปล่อยคิวเสียงไปพูดคั่นระหว่างรอ แล้ว schedule รอบถัดไปต่อ
+      if(fillerCount < 3) scheduleFiller();
+    }, fillerCount===0 ? (650 + Math.random()*300) : (1300 + Math.random()*400));
+  }
+  scheduleFiller();
+
+  callScammerAI(state.conversationHistory).then(function(parsed){
+    aiDone = true;
+    clearTimeout(fillerTimerId);
     if(state.screen!=='call') return;
     state.conversationHistory.push({ role:'assistant', content: JSON.stringify(parsed) });
     if(parsed.status==='transfer_confirmed'){ resolveCall('transferred'); return; }
     setStatus('กำลังพูด');
-    await speak(parsed.reply || 'ขอโทษค่ะ ช่วยพูดอีกครั้งได้ไหมคะ');
-    if(state.screen!=='call') return;
-    startListenLoop();
-  }catch(err){
+    speak(parsed.reply || 'ขอโทษค่ะ ช่วยพูดอีกครั้งได้ไหมคะ').then(function(){
+      if(state.screen!=='call') return;
+      startListenLoop();
+    });
+  }).catch(function(err){
+    aiDone = true;
+    clearTimeout(fillerTimerId);
     setStatus('เชื่อมต่อ AI ไม่สำเร็จ (ตรวจสอบ WORKER_URL หรืออินเทอร์เน็ต) — กดวางสายเพื่อลองใหม่');
-  }
+  });
 }
 function resolveCall(outcome){
   clearCallTimer();
