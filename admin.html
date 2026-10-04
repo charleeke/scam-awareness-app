@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>แดชบอร์ดผู้ดูแล — รู้ทันมิจฉาชีพ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&family=Taviraj:wght@600;700&display=swap" rel="stylesheet" />
+<style>
+  /* โทนเดียวกับแอปผู้เรียน (กระดาษ/หมึก) — ข้อมูลเท่านั้นที่ได้ใช้สีเด่น */
+  :root{
+    color-scheme: light;
+    --page:#F5EFE1;
+    --surface:#FFFDF8;
+    --surface-2:#EFE8D6;
+    --ink:#17212B;
+    --text:#241C12;
+    --text-2:#5E5240;
+    --muted:#8A7D66;
+    --line:rgba(36,28,18,.12);
+    --grid:#E6DFCD;
+    --baseline:#CFC5AE;
+    --series:#2a78d6;        /* ชุดข้อมูลเดี่ยวทั่วไป */
+    --safe:#2F6F5E;          /* ผลลัพธ์ปลอดภัย */
+    --critical:#d03b3b;      /* หลงเชื่อ/โอนเงิน */
+    --neutral:#A39A88;       /* ขัดข้องทางเทคนิค */
+    --accent:#C8862B;
+    --demo-bg:#FFF1CC; --demo-text:#6A4A00;
+    --shadow:0 1px 2px rgba(36,28,18,.06), 0 8px 24px rgba(36,28,18,.05);
+    --font:'Sarabun', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-title:'Taviraj', 'Sarabun', serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --page:#0F151B; --surface:#17212B; --surface-2:#1F2B37; --ink:#F5EFE1;
+      --text:#F2ECDF; --text-2:#C9C0AE; --muted:#8F8778;
+      --line:rgba(255,255,255,.10); --grid:#26323E; --baseline:#3A4652;
+      --series:#3987e5; --safe:#4FA58C; --critical:#e66767; --neutral:#7E776B;
+      --demo-bg:#3A2E10; --demo-text:#F5D98A;
+      --shadow:none;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --page:#0F151B; --surface:#17212B; --surface-2:#1F2B37; --ink:#F5EFE1;
+    --text:#F2ECDF; --text-2:#C9C0AE; --muted:#8F8778;
+    --line:rgba(255,255,255,.10); --grid:#26323E; --baseline:#3A4652;
+    --series:#3987e5; --safe:#4FA58C; --critical:#e66767; --neutral:#7E776B;
+    --demo-bg:#3A2E10; --demo-text:#F5D98A;
+    --shadow:none;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; }
+  body{ background:var(--page); color:var(--text); font-family:var(--font); font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased; }
+  h1,h2,h3,p{ margin:0; }
+  button,select,input{ font:inherit; color:inherit; }
+  [hidden]{ display:none !important; }
+
+  /* ---------- login ---------- */
+  .login{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px 16px; }
+  .login-card{ width:100%; max-width:420px; background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:32px 28px; box-shadow:var(--shadow); }
+  .login-card h1{ font-family:var(--font-title); font-size:26px; line-height:1.25; }
+  .login-card p{ color:var(--text-2); margin-top:8px; font-size:14px; }
+  .login-card label{ display:block; font-size:13px; font-weight:600; color:var(--text-2); margin-top:22px; margin-bottom:6px; }
+  .input{ width:100%; padding:12px 14px; border-radius:10px; border:1.5px solid var(--line); background:var(--page); }
+  .input:focus, .select:focus, .btn:focus-visible{ outline:2px solid var(--accent); outline-offset:1px; }
+  .login-err{ color:var(--critical); font-size:13px; margin-top:8px; min-height:1em; }
+  .btn{ display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:9px 14px; border-radius:10px; border:1px solid var(--line); background:var(--surface); cursor:pointer; font-size:14px; font-weight:600; white-space:nowrap; }
+  .btn:hover{ background:var(--surface-2); }
+  .btn-solid{ background:var(--ink); color:var(--page); border-color:var(--ink); }
+  .btn-solid:hover{ background:var(--ink); opacity:.92; }
+  .btn-block{ width:100%; padding:13px; margin-top:14px; }
+  .btn-link{ border:none; background:none; padding:6px 2px; color:var(--text-2); text-decoration:underline; text-underline-offset:3px; font-weight:500; }
+  .btn-link:hover{ background:none; color:var(--text); }
+  .btn[aria-pressed="true"]{ background:var(--ink); color:var(--page); border-color:var(--ink); }
+
+  /* ---------- shell ---------- */
+  .demo-banner{ background:var(--demo-bg); color:var(--demo-text); font-weight:600; font-size:14px; text-align:center; padding:9px 16px; position:sticky; top:0; z-index:20; }
+  .wrap{ max-width:1240px; margin:0 auto; padding:24px 24px 64px; }
+  .head{ display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:12px 24px; }
+  .head h1{ font-family:var(--font-title); font-size:28px; line-height:1.2; }
+  .head .sub{ color:var(--text-2); font-size:14px; margin-top:4px; }
+  .head-actions{ display:flex; flex-wrap:wrap; gap:8px; }
+  .filters{ display:flex; flex-wrap:wrap; align-items:center; gap:8px 10px; margin-top:20px; padding:10px; background:var(--surface); border:1px solid var(--line); border-radius:14px; }
+  .seg{ display:inline-flex; background:var(--surface-2); border-radius:10px; padding:3px; }
+  .seg button{ border:none; background:none; padding:6px 12px; border-radius:8px; cursor:pointer; font-size:14px; font-weight:600; color:var(--text-2); }
+  .seg button[aria-pressed="true"]{ background:var(--surface); color:var(--text); box-shadow:0 1px 2px rgba(0,0,0,.08); }
+  .select{ padding:8px 10px; border-radius:10px; border:1px solid var(--line); background:var(--surface); font-size:14px; max-width:220px; }
+  .check{ display:inline-flex; align-items:center; gap:7px; font-size:14px; color:var(--text-2); cursor:pointer; padding:4px 6px; }
+  .check input{ accent-color:var(--ink); width:16px; height:16px; }
+  .filters .spacer{ flex:1; }
+  .updated{ font-size:13px; color:var(--muted); }
+  .live-dot{ display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--safe); margin-right:6px; vertical-align:1px; animation:pulse 2s infinite; }
+  @keyframes pulse{ 50%{ opacity:.3; } }
+  @media (prefers-reduced-motion: reduce){ .live-dot{ animation:none; } }
+
+  /* ---------- KPI ---------- */
+  .kpis{ display:grid; grid-template-columns: 1.35fr repeat(4, 1fr); gap:14px; margin-top:18px; }
+  .tile{ background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:18px 20px; box-shadow:var(--shadow); min-width:0; }
+  .tile-label{ font-size:13.5px; color:var(--text-2); font-weight:600; }
+  .tile-value{ font-size:34px; font-weight:700; line-height:1.15; margin-top:8px; letter-spacing:-.01em; }
+  .tile-value small{ font-size:16px; font-weight:600; color:var(--text-2); margin-left:2px; }
+  .tile-note{ font-size:13px; color:var(--muted); margin-top:6px; }
+  .tile.hero{ border-left:4px solid var(--critical); }
+  .tile.hero .tile-value{ font-size:52px; }
+  .tile.hero .tile-label{ color:var(--text); }
+
+  /* ---------- cards & grid ---------- */
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px; }
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:20px 22px; box-shadow:var(--shadow); min-width:0; }
+  .card.full{ margin-top:14px; }
+  .card h2{ font-size:17px; font-weight:700; }
+  .card .desc{ font-size:13.5px; color:var(--text-2); margin-top:3px; }
+  .insight{ margin-top:14px; padding:10px 14px; background:var(--surface-2); border-radius:10px; font-size:14px; line-height:1.55; }
+  .insight b{ font-weight:700; }
+  .empty{ color:var(--muted); font-size:14px; padding:24px 0; text-align:center; }
+
+  /* horizontal bars (HTML) */
+  .hbars{ margin-top:16px; display:flex; flex-direction:column; gap:12px; }
+  .hbar{ display:grid; grid-template-columns: minmax(120px, 34%) 1fr auto; align-items:center; gap:12px; border-radius:8px; outline:none; }
+  .hbar:focus-visible{ box-shadow:0 0 0 2px var(--accent); }
+  .hbar-label{ font-size:14px; line-height:1.35; display:flex; align-items:center; gap:8px; min-width:0; }
+  .hbar-label .sw{ width:10px; height:10px; border-radius:3px; flex:0 0 auto; }
+  .hbar-label .sub{ color:var(--muted); font-size:12.5px; display:block; }
+  .hbar-track{ position:relative; height:16px; border-left:1px solid var(--baseline); }
+  .hbar-fill{ position:absolute; left:0; top:0; bottom:0; border-radius:0 4px 4px 0; min-width:2px; }
+  .hbar-val{ font-size:14px; font-weight:600; text-align:right; min-width:92px; font-variant-numeric:tabular-nums; }
+  .hbar-val .sub{ display:block; font-weight:400; font-size:12.5px; color:var(--muted); }
+  .hbar.dim .hbar-label{ color:var(--muted); }
+
+  .footnote{ font-size:12.5px; color:var(--muted); margin-top:12px; }
+
+  /* SVG charts */
+  .svgbox{ margin-top:14px; width:100%; }
+  .svgbox svg{ display:block; width:100%; height:auto; overflow:visible; }
+  .ax{ fill:var(--muted); font-size:12px; font-family:var(--font); }
+  .gridline{ stroke:var(--grid); stroke-width:1; }
+  .baseline{ stroke:var(--baseline); stroke-width:1; }
+  .hit{ fill:transparent; cursor:default; }
+  .hit:focus{ outline:none; }
+  .col:hover, .col:focus-within{ opacity:.85; }
+
+  /* item analysis */
+  .items{ margin-top:14px; display:flex; flex-direction:column; }
+  .item{ display:grid; grid-template-columns: 56px minmax(0,1.6fr) minmax(140px,1fr) 74px 74px; gap:14px; align-items:center; padding:11px 0; border-top:1px solid var(--line); }
+  .item:first-child{ border-top:none; }
+  .item-head{ font-size:12.5px; color:var(--muted); font-weight:600; padding-bottom:6px; }
+  .item-no{ font-weight:700; font-size:14px; }
+  .item-q{ font-size:14px; line-height:1.45; }
+  .item-q .wrong{ display:block; font-size:12.5px; color:var(--text-2); margin-top:3px; }
+  .item-num{ text-align:right; font-variant-numeric:tabular-nums; font-size:14px; }
+  .item .hbar-track{ height:14px; }
+
+  /* tables */
+  .tbl-wrap{ overflow-x:auto; margin-top:14px; }
+  table{ width:100%; border-collapse:collapse; font-size:14px; }
+  th{ text-align:left; font-size:12.5px; color:var(--muted); font-weight:600; padding:8px 10px; border-bottom:1px solid var(--line); white-space:nowrap; }
+  td{ padding:9px 10px; border-bottom:1px solid var(--line); white-space:nowrap; font-variant-numeric:tabular-nums; }
+  tr.row{ cursor:pointer; }
+  tr.row:hover td{ background:var(--surface-2); }
+  td.num, th.num{ text-align:right; }
+  .pill{ display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; }
+  .pill .sw{ width:8px; height:8px; border-radius:50%; }
+  .more{ margin-top:12px; text-align:center; }
+
+  /* drawer */
+  .drawer-bg{ position:fixed; inset:0; background:rgba(10,14,18,.45); z-index:40; display:flex; justify-content:flex-end; }
+  .drawer{ width:min(520px, 100%); height:100%; background:var(--surface); overflow-y:auto; padding:22px 22px 40px; box-shadow:-8px 0 30px rgba(0,0,0,.18); }
+  .drawer-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+  .drawer h3{ font-size:18px; }
+  .kv{ display:grid; grid-template-columns:auto 1fr; gap:6px 16px; margin-top:16px; font-size:14px; }
+  .kv dt{ color:var(--muted); }
+  .kv dd{ margin:0; font-weight:600; }
+  .turns{ margin-top:18px; display:flex; flex-direction:column; gap:10px; }
+  .turn{ max-width:88%; padding:9px 13px; border-radius:14px; font-size:14px; line-height:1.55; }
+  .turn .t{ display:block; font-size:11.5px; color:var(--muted); margin-bottom:2px; }
+  .turn.assistant{ background:var(--surface-2); align-self:flex-start; border-bottom-left-radius:4px; }
+  .turn.user{ background:var(--ink); color:var(--page); align-self:flex-end; border-bottom-right-radius:4px; }
+  .turn.user .t{ color:inherit; opacity:.7; }
+  .danger-btn{ color:var(--critical); border-color:currentColor; background:transparent; }
+
+  /* tooltip */
+  #tip{ position:fixed; z-index:60; pointer-events:none; background:var(--ink); color:var(--page); font-size:13px; line-height:1.45; padding:7px 10px; border-radius:8px; max-width:280px; box-shadow:0 6px 20px rgba(0,0,0,.2); }
+
+  /* presentation mode — ซ่อนข้อมูลระบุตัวบุคคลเมื่อฉายขึ้นจอ */
+  body.present .private{ display:none !important; }
+  body.present .wrap{ max-width:1400px; }
+  body.present .tile-value{ font-size:40px; }
+  body.present .tile.hero .tile-value{ font-size:64px; }
+
+  @media (max-width: 1080px){
+    .kpis{ grid-template-columns: repeat(2, 1fr); }
+    .tile.hero{ grid-column: 1 / -1; }
+  }
+  @media (max-width: 820px){
+    .grid2{ grid-template-columns:1fr; }
+    .item{ grid-template-columns: 40px minmax(0,1fr) 64px; }
+    .item .bar-col, .item .time-col{ display:none; }
+  }
+  @media (max-width: 560px){
+    .wrap{ padding:16px 16px 48px; }
+    .head h1{ font-size:23px; }
+    .tile-value{ font-size:28px; }
+    .tile.hero .tile-value{ font-size:44px; }
+    .hbar{ grid-template-columns: 1fr auto; }
+    .hbar-track{ grid-column: 1 / -1; grid-row:2; }
+    .filters .spacer{ display:none; }
+  }
+  @media print{
+    .filters, .head-actions, .private{ display:none !important; }
+    body{ background:#fff; }
+    .tile, .card{ box-shadow:none; break-inside:avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div id="tip" hidden role="tooltip"></div>
+
+<!-- ======== หน้าเข้าสู่ระบบ ======== -->
+<section id="login" class="login" hidden>
+  <form class="login-card" id="login-form" autocomplete="off">
+    <h1>แดชบอร์ดผู้ดูแล<br/>รู้ทันมิจฉาชีพ</h1>
+    <p>สำหรับผู้ดูแลโครงการเท่านั้น ใส่รหัสเข้าใช้งาน (ADMIN_TOKEN) ที่ตั้งไว้ใน Cloudflare Worker</p>
+    <label for="token-input">รหัสเข้าใช้งาน</label>
+    <input id="token-input" class="input" type="password" autocomplete="current-password" required />
+    <p class="login-err" id="login-err" role="alert"></p>
+    <button class="btn btn-solid btn-block" type="submit">เข้าสู่ระบบ</button>
+    <p style="margin-top:18px;text-align:center"><a class="btn-link" href="?demo=1">ดูตัวอย่างด้วยข้อมูลจำลอง</a></p>
+  </form>
+</section>
+
+<!-- ======== แดชบอร์ด ======== -->
+<section id="dash" hidden>
+  <div class="demo-banner" id="demo-banner" hidden>ข้อมูลตัวอย่างจำลองเพื่อสาธิตเท่านั้น — ไม่ใช่ผลจากผู้เรียนจริง</div>
+  <div class="wrap">
+    <header class="head">
+      <div>
+        <h1>ผลการเรียนรู้ “รู้ทันมิจฉาชีพ”</h1>
+        <p class="sub" id="scope-text">—</p>
+      </div>
+      <div class="head-actions">
+        <button class="btn" id="present-btn" aria-pressed="false" title="ซ่อนรหัสนักศึกษาและรายการรายบุคคลเมื่อฉายขึ้นจอ">โหมดนำเสนอ</button>
+        <button class="btn private" id="csv-btn">ส่งออก CSV</button>
+        <button class="btn" id="logout-btn">ออกจากระบบ</button>
+      </div>
+    </header>
+
+    <div class="filters" role="group" aria-label="ตัวกรอง">
+      <div class="seg" id="range-seg">
+        <button data-range="today" aria-pressed="false">วันนี้</button>
+        <button data-range="7" aria-pressed="false">7 วัน</button>
+        <button data-range="30" aria-pressed="false">30 วัน</button>
+        <button data-range="all" aria-pressed="true">ทั้งหมด</button>
+      </div>
+      <select class="select" id="class-select" aria-label="กลุ่ม/ห้องเรียน"><option value="">ทุกกลุ่ม</option></select>
+      <label class="check"><input type="checkbox" id="first-only" checked /> นับเฉพาะครั้งแรกของแต่ละคน</label>
+      <span class="spacer"></span>
+      <label class="check"><input type="checkbox" id="live-toggle" /> อัปเดตสด</label>
+      <span class="updated" id="updated-text"></span>
+    </div>
+
+    <div class="kpis" id="kpis"></div>
+
+    <div class="grid2">
+      <article class="card">
+        <h2>เมื่อสายมิจฉาชีพโทรเข้า ผู้เรียนทำอย่างไร</h2>
+        <p class="desc">ผลลัพธ์ของสายจำลองที่แทรกระหว่างทำแบบทดสอบ</p>
+        <div id="outcome-chart"></div>
+      </article>
+      <article class="card">
+        <h2>ความรู้ ≠ พฤติกรรม?</h2>
+        <p class="desc">อัตราตกลงโอนเงิน แยกตามคะแนนแบบทดสอบ</p>
+        <div id="band-chart"></div>
+      </article>
+    </div>
+
+    <div class="grid2">
+      <article class="card">
+        <h2>คุยนานแค่ไหนก่อนตัดสินใจ</h2>
+        <p class="desc">ระยะเวลาสนทนาของผู้ที่รับสาย 1 จุด = 1 คน เส้นตั้ง = ค่ามัธยฐาน</p>
+        <div id="duration-chart"></div>
+      </article>
+      <article class="card">
+        <h2>จำนวนผู้เข้าใช้งาน</h2>
+        <p class="desc" id="time-desc">จำนวนครั้งที่เริ่มใช้งาน</p>
+        <div id="time-chart"></div>
+      </article>
+    </div>
+
+    <article class="card full">
+      <h2>วิเคราะห์รายข้อ</h2>
+      <p class="desc">ร้อยละตอบถูก ตัวลวงที่ถูกเลือกมากที่สุด และเวลาที่ใช้คิด (ค่ามัธยฐาน) — ใช้ปรับปรุงเนื้อหาบทเรียน</p>
+      <div id="item-chart"></div>
+    </article>
+
+    <article class="card full" id="school-card" hidden>
+      <h2>แยกตามสำนักวิชา</h2>
+      <p class="desc">จากการเชื่อมรหัสนักศึกษากับฐานข้อมูลมหาวิทยาลัย</p>
+      <div id="school-table"></div>
+    </article>
+
+    <article class="card full private">
+      <h2>รายการล่าสุด</h2>
+      <p class="desc">คลิกแถวเพื่อดูรายละเอียดและบทสนทนาในสาย</p>
+      <label class="check" style="margin-top:8px"><input type="checkbox" id="unmask" /> แสดงรหัสนักศึกษาเต็ม</label>
+      <div id="session-table"></div>
+    </article>
+
+    <p class="footnote" id="foot"></p>
+  </div>
+</section>
+
+<div id="drawer-root"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ================= ตั้งค่า ================= */
+var WORKER_BASE = 'https://scam-awareness-proxy.charlee-qq.workers.dev';
+var LIVE_INTERVAL_MS = 20000;
+var STALE_MS = 30 * 60 * 1000;   // อยู่ระหว่างทำแต่ไม่มีความเคลื่อนไหว 30 นาที = ไม่จบ
+
+/* คำถามควิซ — ต้องตรงกับ QUIZ ใน index.html (ลำดับ/ตัวเลือก/เฉลย) ถ้าแก้ที่นั่นให้แก้ที่นี่ด้วย */
+var QUIZ = [
+  { s:'สัญญาณอันตรายที่ชัดเจนที่สุด (เร่งโอนภายใน 1 ชม.)', o:['มีการโทรมาแทนที่จะส่งอีเมล','การเร่งให้ตัดสินใจโอนเงินภายในเวลาจำกัดมาก','เจ้าหน้าที่พูดสำเนียงต่างจังหวัด','โทรมาในเวลาทำการปกติ'], c:1 },
+  { s:'ให้โอนเข้าบัญชีส่วนบุคคลของ “เจ้าหน้าที่”', o:['โอนไปก่อนเพราะกลัวไม่ทันเวลา','วางสายและติดต่อมหาวิทยาลัยผ่านช่องทางทางการ','ขอเลขบัญชีแล้วโอนครึ่งหนึ่งก่อน','ถามชื่อเจ้าหน้าที่แล้วโอนตามปกติ'], c:1 },
+  { s:'“อย่าบอกเพื่อนหรือผู้ปกครอง” บ่งบอกอะไร', o:['เป็นความลับทางราชการปกติ','ความพยายามแยกเหยื่อออกจากคนที่จะช่วยตรวจสอบ','เจ้าหน้าที่ใส่ใจความเป็นส่วนตัวของคุณ','ระเบียบมหาวิทยาลัยทั่วไป'], c:1 },
+  { s:'ช่องทางตรวจสอบที่ถูกต้อง', o:['เชื่อเบอร์โทรที่ขึ้นแคลเลอร์ไอดี','ให้ข้อมูลส่วนตัวเพื่อยืนยันตัวตนกับผู้โทร','โทรกลับเบอร์กลางที่หาจากเว็บไซต์ทางการเอง','ให้เพื่อนที่เคยไปปีก่อนช่วยยืนยัน'], c:2 },
+  { s:'“ระบบอัตโนมัติของธนาคาร” ขอ OTP', o:['กด OTP ตามที่บอก','วางสายทันที ไม่มีหน่วยงานใดขอ OTP ทางโทรศัพท์','บอก OTP บางส่วนก่อน','ขอเวลาคิด 1 นาทีแล้วบอก OTP'], c:1 },
+  { s:'ถูกเร่ง “ต้องตัดสินใจตอนนี้เลย”', o:['ยอมตามเพราะผู้โทรพูดหนักแน่น','วางสายได้ทันทีโดยไม่ต้องรู้สึกผิด','ต่อรองขอเวลาเพิ่มอีก 5 นาที','โอนเงินจำนวนน้อยก่อน'], c:1 },
+  { s:'เผลอโอนไปแล้ว ขั้นตอนแรกคือ', o:['รอดูสถานการณ์ 2-3 วัน','แจ้งธนาคารอายัดทันที และแจ้งความ 1441','โทรกลับไปต่อรองกับมิจฉาชีพ','ลบหลักฐานการโอน'], c:1 },
+  { s:'ทำไมเลือกหัวข้อ “ค่าทัศนศึกษาต่างประเทศ”', o:['เป็นเรื่องที่ไม่มีใครสนใจ','เงินสูง เส้นตายชัด กลัวพลาดโอกาส','มหาวิทยาลัยประกาศต่อสาธารณะทุกครั้ง','ไม่มีทางตรวจสอบได้เลย'], c:1 }
+];
+
+var OUTCOMES = [
+  { key:'declined',    label:'ปฏิเสธสายทันที',          color:'var(--safe)',     safe:true },
+  { key:'missed',      label:'ไม่รับสาย (ปล่อยให้ดังจนตัด)', color:'var(--safe)', safe:true },
+  { key:'hungup',      label:'รับสาย แล้ววางสายเอง',    color:'var(--safe)',     safe:true },
+  { key:'transferred', label:'หลงเชื่อ ตกลงโอนเงิน',      color:'var(--critical)', safe:false },
+  { key:'technical',   label:'สายขัดข้องทางเทคนิค',       color:'var(--neutral)',  safe:null }
+];
+var OUTCOME_BY_KEY = {}; OUTCOMES.forEach(function(o){ OUTCOME_BY_KEY[o.key] = o; });
+
+/* ================= สถานะ ================= */
+var params = new URLSearchParams(location.search);
+var DEMO = params.has('demo');
+var ui = { range:'all', cls:'', firstOnly:true, live:false, present:false, unmask:false, tableLimit:50 };
+var raw = { sessions:[], answers:[], classes:[], generated_at:0 };
+var view = null; // ข้อมูลหลังกรอง
+var liveTimer = null;
+var token = '';
+
+/* ================= ยูทิลิตี้ ================= */
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function pct(x){ return (x == null || !isFinite(x)) ? '–' : Math.round(x * 100) + '%'; }
+function num(n){ return (n == null) ? '–' : Number(n).toLocaleString('th-TH'); }
+function median(arr){
+  var a = arr.filter(function(x){ return x != null && isFinite(x); }).sort(function(x,y){ return x-y; });
+  if(!a.length) return null;
+  var m = Math.floor(a.length/2);
+  return a.length % 2 ? a[m] : (a[m-1] + a[m]) / 2;
+}
+function mean(arr){
+  var a = arr.filter(function(x){ return x != null && isFinite(x); });
+  return a.length ? a.reduce(function(s,x){ return s+x; }, 0) / a.length : null;
+}
+function fmtDur(ms){
+  if(ms == null) return '–';
+  var sec = Math.round(ms/1000);
+  if(sec < 60) return sec + ' วิ';
+  var m = Math.floor(sec/60), s = sec % 60;
+  return m + ':' + (s < 10 ? '0' : '') + s + ' นาที';
+}
+function fmtTime(ms){
+  return new Date(ms).toLocaleString('th-TH', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+}
+function maskId(id){
+  if(!id) return '–';
+  if(ui.unmask) return id;
+  return id.length > 4 ? id.slice(0, 4) + '•'.repeat(Math.max(3, id.length - 4)) : '••••';
+}
+function store(k, v){ try{ if(v == null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); }catch(e){} }
+function load(k){ try{ return sessionStorage.getItem(k); }catch(e){ return null; } }
+
+/* outcome ของแต่ละ session — แยก "วางสายเพราะระบบขัดข้อง" ออกจาก "วางสายเพราะรู้ทัน" */
+function outcomeOf(s){
+  if(!s.call_outcome) return null;
+  if(s.call_outcome === 'hungup' && s.call_end_reason && s.call_end_reason !== 'user') return 'technical';
+  return s.call_outcome;
+}
+
+/* ================= ข้อมูลจำลอง (โหมดสาธิต) ================= */
+function demoData(){
+  var seed = 20261004;
+  function rnd(){ seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; }
+  function pick(a){ return a[Math.floor(rnd() * a.length)]; }
+  function normal(mu, sd){ var u = 1 - rnd(), v = rnd(); return mu + sd * Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+  var schools = [
+    { school:'สำนักวิชาสารสนเทศศาสตร์', cls:'INF-101' },
+    { school:'สำนักวิชาแพทยศาสตร์', cls:'MED-201' },
+    { school:'สำนักวิชาพยาบาลศาสตร์', cls:'NUR-110' },
+    { school:'สำนักวิชาวิศวกรรมศาสตร์และเทคโนโลยี', cls:'ENG-105' },
+    { school:'สำนักวิชาการจัดการ', cls:'MGT-120' }
+  ];
+  // ความยากของแต่ละข้อ (โอกาสตอบถูก) และตัวลวงที่ดึงดูด
+  var pCorrect = [0.86, 0.9, 0.78, 0.62, 0.84, 0.74, 0.69, 0.81];
+  var lure = [3, 2, 0, 0, 3, 2, 0, 2];
+  var now = Date.now(), day = 86400000;
+  var sessions = [], answers = [];
+  var nStudents = 164;
+  for(var i = 0; i < nStudents; i++){
+    var sc = pick(schools);
+    var sid = '67' + String(10000 + Math.floor(rnd() * 89999)).padStart(6, '0').slice(0, 6);
+    var attempts = rnd() < 0.12 ? 2 : 1;
+    var dayOffset = Math.floor(Math.pow(rnd(), 1.6) * 14);
+    var t0 = now - dayOffset * day - Math.floor((rnd() * 9 + 8) * 3600000) % day;
+    for(var at = 0; at < attempts; at++){
+      var created = t0 + at * (20 + rnd() * 30) * 60000;
+      if(created > now) created = now - rnd() * 3600000;
+      var id = 'demo-' + i + '-' + at;
+      var ability = normal(0, 1) + at * 0.6;
+      var score = 0, qtimes = [];
+      QUIZ.forEach(function(q, qi){
+        var p = Math.min(0.98, Math.max(0.2, pCorrect[qi] + ability * 0.08));
+        var ok = rnd() < p;
+        if(ok) score++;
+        var sel = ok ? q.c : (rnd() < 0.6 ? lure[qi] : pick([0,1,2,3].filter(function(x){ return x !== q.c; })));
+        var tm = Math.max(3500, normal(14000 + qi * 900, 6000));
+        qtimes.push(tm);
+        answers.push({ session_id:id, q_index:qi, selected:sel, correct:ok ? 1 : 0, time_ms:Math.round(tm) });
+      });
+      var completed = rnd() > 0.06;
+      // พฤติกรรมในสาย — ผูกกับคะแนนเพียงเล็กน้อย (ข้อมูลจำลอง)
+      var r = rnd(), frac = score / QUIZ.length;
+      var pTransfer = 0.30 - frac * 0.14 - at * 0.08;
+      var outcome, reason = null, dur = null, turns = 0, ring = Math.round(Math.max(1200, normal(6500, 3500)));
+      if(r < 0.24){ outcome = 'declined'; }
+      else if(r < 0.33){ outcome = 'missed'; ring = 30000; }
+      else if(r < 0.33 + pTransfer){ outcome = 'transferred'; dur = Math.max(25000, normal(118000, 45000)); turns = Math.max(2, Math.round(dur / 22000)); }
+      else if(r < 0.96){ outcome = 'hungup'; reason = 'user'; dur = Math.max(6000, normal(62000, 38000)); turns = Math.max(1, Math.round(dur / 24000)); }
+      else { outcome = 'hungup'; reason = pick(['mic_error', 'no_speech', 'ai_error']); dur = Math.max(5000, normal(25000, 10000)); turns = 0; }
+      var qt = qtimes.reduce(function(a, b){ return a + b; }, 0) + 20000;
+      sessions.push({
+        id:id, created_at:Math.round(created), updated_at:Math.round(created + qt + (dur || 0) + 60000),
+        student_id:sid, class_code:sc.cls, consent_version:'v1',
+        device:rnd() < 0.55 ? 'android' : (rnd() < 0.85 ? 'ios' : 'desktop'), browser:'chrome',
+        status:completed ? 'completed' : 'in_progress', last_screen:completed ? 'quiz-result' : 'quiz',
+        lesson_ms:Math.round(Math.max(20000, normal(95000, 40000))), quiz_active_ms:Math.round(qt),
+        score:score, total:QUIZ.length, call_trigger_q:5 + Math.floor(rnd() * 4), call_forced:rnd() < 0.2 ? 1 : 0,
+        ring_ms:ring, call_outcome:outcome, call_duration_ms:dur ? Math.round(dur) : null, call_turns:turns,
+        call_end_reason:reason, mic_error:reason && reason !== 'user' ? reason : null,
+        school:sc.school, program:null, year:1 + Math.floor(rnd() * 4)
+      });
+    }
+  }
+  sessions.sort(function(a, b){ return b.created_at - a.created_at; });
+  var cmap = {};
+  sessions.forEach(function(s){ cmap[s.class_code] = (cmap[s.class_code] || 0) + 1; });
+  return {
+    generated_at:now, tracking:true, sessions:sessions, answers:answers,
+    classes:Object.keys(cmap).map(function(k){ return { class_code:k, n:cmap[k] }; })
+  };
+}
+function demoTranscript(s){
+  var lines = [
+    ['assistant','สวัสดีค่ะ น้อง[ชื่อ] ใช่ไหมคะ'],
+    ['user','ใช่ค่ะ ใครโทรมาคะ'],
+    ['assistant','พี่โทรจากฝ่ายกิจการนักศึกษานะคะ ค่ามัดจำทัศนศึกษาต่างประเทศของน้องยังไม่เข้าระบบ ถ้าไม่โอนภายในวันนี้จะเสียสิทธิ์ที่นั่งค่ะ'],
+    ['user','เอ๊ะ หนูโอนไปแล้วนะคะ'],
+    ['assistant','ยอดยังขาดอีกสามพันบาทค่ะ เดี๋ยวพี่ให้เลขบัญชีเจ้าหน้าที่ โอนก่อนบ่ายสามนะคะ ไม่ต้องบอกใครนะ เดี๋ยวคิวจะวุ่น'],
+    ['user', s.call_outcome === 'transferred' ? 'ได้ค่ะ เดี๋ยวโอนให้เลยค่ะ' : 'ขอโทรไปเช็กกับคณะก่อนนะคะ']
+  ];
+  var n = s.call_outcome === 'transferred' ? 6 : Math.min(6, 1 + (s.call_turns || 1) * 2);
+  var step = (s.call_duration_ms || 30000) / n;
+  return lines.slice(0, n).map(function(l, i){ return { turn_no:i, role:l[0], text:l[1], t_ms:Math.round(i * step) }; });
+}
+
+/* ================= โหลดข้อมูล ================= */
+function api(path, opts){
+  opts = opts || {};
+  opts.headers = Object.assign({ 'authorization':'Bearer ' + token }, opts.headers || {});
+  return fetch(WORKER_BASE + path, opts).then(function(r){
+    if(r.status === 401) throw { auth:true };
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  });
+}
+function refresh(){
+  if(DEMO){ raw = raw.sessions.length ? raw : demoData(); applyAndRender(); return Promise.resolve(); }
+  return api('/api/admin/data').then(function(d){
+    raw = d;
+    applyAndRender();
+  }).catch(function(e){
+    if(e && e.auth){ logout('รหัสเข้าใช้งานไม่ถูกต้องหรือหมดอายุ'); return; }
+    $('updated-text').textContent = 'โหลดข้อมูลไม่สำเร็จ — ' + (e && e.message || '');
+  });
+}
+
+/* ================= กรอง + คำนวณ ================= */
+function rangeStart(){
+  var now = new Date();
+  if(ui.range === 'today'){ now.setHours(0,0,0,0); return now.getTime(); }
+  if(ui.range === '7') return Date.now() - 7 * 86400000;
+  if(ui.range === '30') return Date.now() - 30 * 86400000;
+  return 0;
+}
+function applyFilters(){
+  var from = rangeStart();
+  var list = raw.sessions.filter(function(s){
+    return s.created_at >= from && (!ui.cls || s.class_code === ui.cls);
+  });
+  if(ui.firstOnly){
+    // ครั้งแรกของแต่ละคน: ดูจากประวัติทั้งหมด (ไม่ใช่เฉพาะช่วงที่กรอง)
+    var firstId = {};
+    raw.sessions.slice().sort(function(a, b){ return a.created_at - b.created_at; }).forEach(function(s){
+      var k = s.student_id || s.id;
+      if(!firstId[k]) firstId[k] = s.id;
+    });
+    list = list.filter(function(s){ return firstId[s.student_id || s.id] === s.id; });
+  }
+  var ids = {}; list.forEach(function(s){ ids[s.id] = true; });
+  var ans = raw.answers.filter(function(a){ return ids[a.session_id]; });
+  return { sessions:list, answers:ans };
+}
+function compute(v){
+  var S = v.sessions, now = raw.generated_at || Date.now();
+  var students = {};
+  S.forEach(function(s){ students[s.student_id || s.id] = true; });
+  var completed = S.filter(function(s){ return s.status === 'completed'; });
+  var active = S.filter(function(s){ return s.status !== 'completed' && now - s.updated_at < STALE_MS; });
+  var dropped = S.filter(function(s){ return s.status !== 'completed' && now - s.updated_at >= STALE_MS; });
+  var counts = {}; OUTCOMES.forEach(function(o){ counts[o.key] = 0; });
+  var called = [];
+  S.forEach(function(s){ var o = outcomeOf(s); if(o){ counts[o]++; called.push(s); } });
+  var validCalls = called.filter(function(s){ return outcomeOf(s) !== 'technical'; });
+  var transferred = validCalls.filter(function(s){ return s.call_outcome === 'transferred'; });
+  var total = QUIZ.length;
+  var lowMax = Math.floor(total * 0.5), highMin = Math.ceil(total * 0.8);
+  var bands = [
+    { label:'คะแนน ' + highMin + '–' + total + ' ข้อ', test:function(sc){ return sc >= highMin; } },
+    { label:'คะแนน ' + (lowMax + 1) + '–' + (highMin - 1) + ' ข้อ', test:function(sc){ return sc > lowMax && sc < highMin; } },
+    { label:'คะแนน 0–' + lowMax + ' ข้อ', test:function(sc){ return sc <= lowMax; } }
+  ].map(function(b){
+    var g = validCalls.filter(function(s){ return s.status === 'completed' && b.test(s.score); });
+    var t = g.filter(function(s){ return s.call_outcome === 'transferred'; }).length;
+    return { label:b.label, n:g.length, k:t, rate:g.length ? t / g.length : null };
+  });
+  // รายข้อ
+  var items = QUIZ.map(function(q, qi){
+    var a = v.answers.filter(function(x){ return x.q_index === qi; });
+    var right = a.filter(function(x){ return x.correct; }).length;
+    var wrongCounts = {};
+    a.forEach(function(x){ if(!x.correct && x.selected != null) wrongCounts[x.selected] = (wrongCounts[x.selected] || 0) + 1; });
+    var topWrong = null, topN = 0;
+    Object.keys(wrongCounts).forEach(function(k){ if(wrongCounts[k] > topN){ topN = wrongCounts[k]; topWrong = +k; } });
+    return { qi:qi, n:a.length, rate:a.length ? right / a.length : null, topWrong:topWrong, topWrongShare:a.length ? topN / a.length : 0,
+             medTime:median(a.map(function(x){ return x.time_ms; })) };
+  });
+  // แยกสำนักวิชา
+  var schools = {};
+  S.forEach(function(s){
+    if(!s.school) return;
+    var g = schools[s.school] || (schools[s.school] = { school:s.school, list:[] });
+    g.list.push(s);
+  });
+  var schoolRows = Object.keys(schools).map(function(k){
+    var L = schools[k].list;
+    var calls = L.filter(function(s){ var o = outcomeOf(s); return o && o !== 'technical'; });
+    var comp = L.filter(function(s){ return s.status === 'completed'; });
+    return { school:k, n:L.length, avgScore:mean(comp.map(function(s){ return s.score; })),
+             calls:calls.length, rate:calls.length ? calls.filter(function(s){ return s.call_outcome === 'transferred'; }).length / calls.length : null };
+  }).sort(function(a, b){ return b.n - a.n; });
+
+  return {
+    sessions:S, students:Object.keys(students).length, completed:completed, active:active, dropped:dropped,
+    avgScore:mean(completed.map(function(s){ return s.score; })), total:total,
+    medQuiz:median(completed.map(function(s){ return s.quiz_active_ms; })),
+    counts:counts, called:called, validCalls:validCalls, transferred:transferred,
+    fallRate:validCalls.length ? transferred.length / validCalls.length : null,
+    answeredRate:validCalls.length ? validCalls.filter(function(s){ return s.call_outcome === 'hungup' || s.call_outcome === 'transferred'; }).length / validCalls.length : null,
+    medRingDecline:median(S.filter(function(s){ return s.call_outcome === 'declined'; }).map(function(s){ return s.ring_ms; })),
+    bands:bands, items:items, schoolRows:schoolRows
+  };
+}
+
+/* ================= render ================= */
+function applyAndRender(){
+  view = compute(applyFilters());
+  renderScope(); renderKpis(); renderOutcome(); renderBands(); renderDuration(); renderTime();
+  renderItems(); renderSchools(); renderTable(); renderClasses();
+  $('updated-text').innerHTML = (ui.live ? '<span class="live-dot" aria-hidden="true"></span>' : '') +
+    'อัปเดต ' + new Date(raw.generated_at || Date.now()).toLocaleTimeString('th-TH', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  var foot = 'นิยาม: “อัตราหลงเชื่อ” = ผู้ที่ตกลงโอนเงิน ÷ ผู้ที่มีสายเข้าและไม่ขัดข้องทางเทคนิค · ' +
+             '“เวลาทำแบบทดสอบ” ไม่รวมช่วงที่คุยโทรศัพท์ · รายการที่ไม่มีความเคลื่อนไหวเกิน 30 นาทีนับเป็น “ไม่จบ”';
+  if(raw.truncated) foot += ' · แสดง 5,000 รายการล่าสุดเท่านั้น';
+  $('foot').textContent = foot;
+}
+function renderScope(){
+  var r = { today:'วันนี้', '7':'7 วันล่าสุด', '30':'30 วันล่าสุด', all:'ทั้งหมด' }[ui.range];
+  $('scope-text').textContent = r + (ui.cls ? ' · กลุ่ม ' + ui.cls : ' · ทุกกลุ่ม') +
+    (ui.firstOnly ? ' · นับเฉพาะครั้งแรก' : ' · รวมการเล่นซ้ำ') + ' · ' + num(view.sessions.length) + ' ครั้ง';
+}
+function renderClasses(){
+  var sel = $('class-select'), cur = ui.cls;
+  var opts = '<option value="">ทุกกลุ่ม</option>' + (raw.classes || []).map(function(c){
+    return '<option value="' + esc(c.class_code) + '"' + (c.class_code === cur ? ' selected' : '') + '>' + esc(c.class_code) + ' (' + c.n + ')</option>';
+  }).join('');
+  if(sel.innerHTML !== opts) sel.innerHTML = opts;
+}
+function tile(label, value, note, cls){
+  return '<div class="tile ' + (cls || '') + '"><p class="tile-label">' + label + '</p><p class="tile-value">' + value + '</p>' +
+    (note ? '<p class="tile-note">' + note + '</p>' : '') + '</div>';
+}
+function renderKpis(){
+  var v = view, n = v.sessions.length;
+  var hero = tile('อัตราหลงเชื่อ ตกลงโอนเงินให้มิจฉาชีพ', pct(v.fallRate),
+    v.validCalls.length ? num(v.transferred.length) + ' จาก ' + num(v.validCalls.length) + ' คนที่ได้รับสาย' : 'ยังไม่มีข้อมูลสายโทรเข้า', 'hero');
+  $('kpis').innerHTML = hero +
+    tile('ผู้เข้าร่วม', num(v.students) + '<small>คน</small>', num(n) + ' ครั้ง' + (v.active.length ? ' · กำลังทำอยู่ ' + v.active.length : '')) +
+    tile('ทำจนจบ', pct(n ? v.completed.length / n : null), num(v.completed.length) + ' ครั้ง' + (v.dropped.length ? ' · หลุดกลางทาง ' + v.dropped.length : '')) +
+    tile('คะแนนเฉลี่ย', v.avgScore == null ? '–' : v.avgScore.toFixed(1) + '<small>/' + v.total + '</small>', 'จากผู้ที่ทำจนจบ') +
+    tile('เวลาทำแบบทดสอบ', v.medQuiz == null ? '–' : fmtDur(v.medQuiz).replace(' นาที', '<small>นาที</small>').replace(' วิ', '<small>วิ</small>'), 'ค่ามัธยฐาน ไม่รวมเวลาคุยสาย');
+}
+function hbar(label, sub, frac, color, val, valSub, tip, dim){
+  return '<div class="hbar' + (dim ? ' dim' : '') + '" tabindex="0" data-tip="' + esc(tip) + '">' +
+    '<span class="hbar-label"><span class="sw" style="background:' + color + '"></span><span>' + esc(label) +
+      (sub ? '<span class="sub">' + esc(sub) + '</span>' : '') + '</span></span>' +
+    '<span class="hbar-track"><span class="hbar-fill" style="width:' + (frac == null ? 0 : Math.max(0, Math.min(1, frac)) * 100) + '%;background:' + color + '"></span></span>' +
+    '<span class="hbar-val">' + val + (valSub ? '<span class="sub">' + valSub + '</span>' : '') + '</span></div>';
+}
+function renderOutcome(){
+  var v = view, el = $('outcome-chart');
+  if(!v.called.length){ el.innerHTML = '<p class="empty">ยังไม่มีข้อมูลสายโทรเข้า</p>'; return; }
+  var denom = v.validCalls.length;
+  var maxN = Math.max.apply(null, OUTCOMES.map(function(o){ return v.counts[o.key]; }).concat([1]));
+  var rows = OUTCOMES.map(function(o){
+    var c = v.counts[o.key];
+    if(o.key === 'technical' && !c) return '';
+    var share = o.key === 'technical' ? null : (denom ? c / denom : null);
+    var tip = o.label + ': ' + num(c) + ' คน' + (share != null ? ' (' + pct(share) + ' ของผู้ที่ได้รับสาย)' : ' — ไม่นับรวมในอัตรา');
+    return hbar(o.label, o.key === 'technical' ? 'ไมค์/เสียง/AI ใช้ไม่ได้ ไม่นับรวมในอัตรา' : null,
+      c / maxN, o.color, share != null ? pct(share) : num(c) + ' คน', share != null ? num(c) + ' คน' : '', tip, o.key === 'technical');
+  }).join('');
+  var safe = denom ? (denom - v.transferred.length) / denom : null;
+  var ringNote = v.medRingDecline != null ? ' ผู้ที่ปฏิเสธใช้เวลาตัดสินใจเพียง <b>' + fmtDur(v.medRingDecline) + '</b> (มัธยฐาน)' : '';
+  el.innerHTML = '<div class="hbars">' + rows + '</div>' +
+    '<p class="insight"><b>' + pct(safe) + '</b> ของผู้ที่ได้รับสายรับมือได้อย่างปลอดภัย และ <b>' + pct(v.answeredRate) + '</b> เลือกกดรับสายจากเบอร์ที่ไม่รู้จัก' + (ringNote ? ' ·' + ringNote : '') + '</p>';
+}
+function renderBands(){
+  var v = view, el = $('band-chart');
+  var any = v.bands.some(function(b){ return b.n; });
+  if(!any){ el.innerHTML = '<p class="empty">ยังไม่มีผู้ที่ทำแบบทดสอบจบและได้รับสาย</p>'; return; }
+  var maxR = Math.max.apply(null, v.bands.map(function(b){ return b.rate || 0; }).concat([0.0001]));
+  var rows = v.bands.map(function(b){
+    return hbar(b.label, num(b.n) + ' คน', b.rate == null ? 0 : b.rate / maxR, 'var(--critical)', pct(b.rate), num(b.k) + ' คนโอน',
+      b.label + ': โอนเงิน ' + num(b.k) + ' จาก ' + num(b.n) + ' คน (' + pct(b.rate) + ')');
+  }).join('');
+  var hi = v.bands[0], lo = v.bands[2], msg;
+  if(hi.n && hi.rate != null){
+    msg = 'แม้ได้<b>' + esc(hi.label) + '</b> ยังหลงโอนเงิน <b>' + pct(hi.rate) + '</b>' +
+      (lo.n ? ' เทียบกับ <b>' + pct(lo.rate) + '</b> ในกลุ่ม' + esc(lo.label.replace('คะแนน ', 'คะแนน ')) : '') +
+      (hi.k > 0 ? ' — คะแนนสูงในแบบทดสอบยังไม่ได้รับประกันว่าจะไม่หลงเชื่อเมื่อเจอสายจริง' : '');
+    if(hi.n < 20 || (lo.n && lo.n < 20)) msg += ' <span style="color:var(--muted)">(จำนวนตัวอย่างยังน้อย ควรตีความอย่างระมัดระวัง)</span>';
+  }
+  el.innerHTML = '<div class="hbars">' + rows + '</div>' + (msg ? '<p class="insight">' + msg + '</p>' : '');
+}
+
+/* strip plot: ระยะเวลาคุยสาย */
+function renderDuration(){
+  var v = view, el = $('duration-chart');
+  var groups = [
+    { key:'hungup', label:'วางสายเอง', color:'var(--safe)' },
+    { key:'transferred', label:'ตกลงโอนเงิน', color:'var(--critical)' }
+  ].map(function(g){
+    g.list = v.validCalls.filter(function(s){ return s.call_outcome === g.key && s.call_duration_ms != null; });
+    g.med = median(g.list.map(function(s){ return s.call_duration_ms; }));
+    return g;
+  });
+  if(!groups[0].list.length && !groups[1].list.length){ el.innerHTML = '<p class="empty">ยังไม่มีผู้ที่รับสาย</p>'; return; }
+  var W = Math.max(320, el.clientWidth || 520), padL = 92, padR = 16, rowH = 64, top = 8, H = top + rowH * 2 + 34;
+  var maxMs = Math.max.apply(null, groups[0].list.concat(groups[1].list).map(function(s){ return s.call_duration_ms; }).concat([60000]));
+  var maxMin = Math.ceil(maxMs / 60000);
+  var stepMin = maxMin > 8 ? 2 : 1;
+  var x = function(ms){ return padL + (W - padL - padR) * (ms / (maxMin * 60000)); };
+  var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="ระยะเวลาสนทนาแยกตามผลลัพธ์">';
+  for(var m = 0; m <= maxMin; m += stepMin){
+    svg += '<line class="gridline" x1="' + x(m * 60000) + '" x2="' + x(m * 60000) + '" y1="' + top + '" y2="' + (top + rowH * 2) + '"/>' +
+      '<text class="ax" x="' + x(m * 60000) + '" y="' + (top + rowH * 2 + 18) + '" text-anchor="middle">' + m + ' นาที</text>';
+  }
+  var seed = 7; function jitter(){ seed = (seed * 9301 + 49297) % 233280; return seed / 233280 - 0.5; }
+  groups.forEach(function(g, gi){
+    var cy = top + rowH * gi + rowH / 2;
+    svg += '<text class="ax" x="0" y="' + (cy - 4) + '" style="fill:var(--text);font-size:13px;font-weight:600">' + g.label + '</text>' +
+      '<text class="ax" x="0" y="' + (cy + 13) + '">' + num(g.list.length) + ' คน</text>';
+    g.list.forEach(function(s){
+      var cx = x(s.call_duration_ms), yy = cy + jitter() * (rowH - 26);
+      var tip = g.label + ' · ' + fmtDur(s.call_duration_ms) + ' · พูด ' + (s.call_turns || 0) + ' ครั้ง';
+      svg += '<circle cx="' + cx.toFixed(1) + '" cy="' + yy.toFixed(1) + '" r="4.5" fill="' + g.color + '" fill-opacity=".72" stroke="var(--surface)" stroke-width="1.5" data-tip="' + esc(tip) + '"/>';
+    });
+    if(g.med != null){
+      var mx = x(g.med);
+      svg += '<line x1="' + mx + '" x2="' + mx + '" y1="' + (cy - rowH / 2 + 6) + '" y2="' + (cy + rowH / 2 - 6) + '" stroke="var(--text)" stroke-width="2" stroke-linecap="round"/>';
+    }
+  });
+  svg += '</svg>';
+  var a = groups[0].med, b = groups[1].med, msg = '';
+  if(a != null && b != null){
+    // บรรยายตามข้อมูลเท่านั้น ไม่สรุปเชิงเหตุผล (ข้อมูลเชิงสังเกต ไม่ใช่การทดลอง)
+    msg = 'ค่ามัธยฐานเวลาคุย: ผู้ที่วางสายเอง <b>' + fmtDur(a) + '</b> · ผู้ที่ตกลงโอนเงิน <b>' + fmtDur(b) + '</b>' +
+      (b > a * 1.2 ? ' — ผู้ที่หลงเชื่อคุยนานกว่าประมาณ ' + (b / a).toFixed(1) + ' เท่า' : '');
+  }
+  el.innerHTML = '<div class="svgbox">' + svg + '</div>' + (msg ? '<p class="insight">' + msg + '</p>' : '');
+}
+
+/* columns: ผู้ใช้งานตามเวลา */
+function renderTime(){
+  var v = view, el = $('time-chart');
+  if(!v.sessions.length){ el.innerHTML = '<p class="empty">ยังไม่มีผู้เข้าใช้งาน</p>'; return; }
+  var times = v.sessions.map(function(s){ return s.created_at; });
+  var minT = Math.min.apply(null, times), maxT = Math.max.apply(null, times);
+  var byHour = ui.range === 'today' || (maxT - minT) < 36 * 3600000;
+  var buckets = [], keyOf, labelOf;
+  if(byHour){
+    var start = new Date(minT); start.setMinutes(0, 0, 0);
+    for(var t = start.getTime(); t <= maxT; t += 3600000) buckets.push({ t:t, n:0 });
+    keyOf = function(ms){ var d = new Date(ms); d.setMinutes(0, 0, 0); return d.getTime(); };
+    labelOf = function(t){ return new Date(t).getHours() + ':00'; };
+    $('time-desc').textContent = 'จำนวนครั้งที่เริ่มใช้งาน รายชั่วโมง';
+  } else {
+    var d0 = new Date(minT); d0.setHours(0, 0, 0, 0);
+    var d1 = new Date(maxT); d1.setHours(0, 0, 0, 0);
+    for(var d = new Date(d0); d <= d1; d.setDate(d.getDate() + 1)) buckets.push({ t:d.getTime(), n:0 });
+    keyOf = function(ms){ var x = new Date(ms); x.setHours(0, 0, 0, 0); return x.getTime(); };
+    labelOf = function(t){ return new Date(t).toLocaleDateString('th-TH', { day:'numeric', month:'short' }); };
+    $('time-desc').textContent = 'จำนวนครั้งที่เริ่มใช้งาน รายวัน';
+  }
+  if(buckets.length > 62) buckets = buckets.slice(-62);
+  var idx = {}; buckets.forEach(function(b, i){ idx[b.t] = i; });
+  v.sessions.forEach(function(s){ var i = idx[keyOf(s.created_at)]; if(i != null) buckets[i].n++; });
+  var W = Math.max(320, el.clientWidth || 520), H = 200, padL = 34, padB = 26, padT = 10, padR = 6;
+  var maxN = Math.max.apply(null, buckets.map(function(b){ return b.n; }).concat([1]));
+  var nice = maxN <= 4 ? 4 : (maxN <= 10 ? 10 : Math.ceil(maxN / 10) * 10); // ขีดแกนเป็นเลขกลม 0 / ครึ่ง / เต็ม
+  var plotW = W - padL - padR, plotH = H - padB - padT;
+  var band = plotW / buckets.length, bw = Math.min(24, Math.max(3, band - 2));
+  var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="จำนวนผู้ใช้งานตามช่วงเวลา">';
+  [0, 0.5, 1].forEach(function(f){
+    var y = padT + plotH * (1 - f);
+    svg += '<line class="' + (f ? 'gridline' : 'baseline') + '" x1="' + padL + '" x2="' + (W - padR) + '" y1="' + y + '" y2="' + y + '"/>' +
+      '<text class="ax" x="' + (padL - 6) + '" y="' + (y + 4) + '" text-anchor="end">' + Math.round(nice * f) + '</text>';
+  });
+  var every = Math.ceil(buckets.length / Math.max(2, Math.floor(plotW / 64)));
+  buckets.forEach(function(b, i){
+    var cx = padL + band * i + band / 2, h = plotH * (b.n / nice), y = padT + plotH - h;
+    var tip = labelOf(b.t) + ' · ' + b.n + ' ครั้ง';
+    svg += '<g class="col" tabindex="0" data-tip="' + esc(tip) + '">' +
+      '<rect class="hit" x="' + (padL + band * i) + '" y="' + padT + '" width="' + band + '" height="' + plotH + '"/>';
+    if(b.n) svg += '<path d="M' + (cx - bw / 2) + ' ' + (padT + plotH) + ' V' + (y + Math.min(4, h)) + ' q0 -' + Math.min(4, h) + ' ' + Math.min(4, bw / 2) + ' -' + Math.min(4, h) +
+      ' H' + (cx + bw / 2 - Math.min(4, bw / 2)) + ' q' + Math.min(4, bw / 2) + ' 0 ' + Math.min(4, bw / 2) + ' ' + Math.min(4, h) + ' V' + (padT + plotH) + ' Z" fill="var(--series)"/>';
+    svg += '</g>';
+    if(i % every === 0) svg += '<text class="ax" x="' + cx + '" y="' + (H - 6) + '" text-anchor="middle">' + labelOf(b.t) + '</text>';
+  });
+  svg += '</svg>';
+  el.innerHTML = '<div class="svgbox">' + svg + '</div>';
+}
+
+function renderItems(){
+  var v = view, el = $('item-chart');
+  if(!v.items.some(function(it){ return it.n; })){ el.innerHTML = '<p class="empty">ยังไม่มีข้อมูลคำตอบ</p>'; return; }
+  var hardest = v.items.filter(function(it){ return it.n; }).sort(function(a, b){ return a.rate - b.rate; })[0];
+  var rows = '<div class="item item-head"><span>ข้อ</span><span>ประเด็น / ตัวลวงยอดนิยม</span><span class="bar-col">ร้อยละตอบถูก</span><span class="item-num">ตอบถูก</span><span class="item-num time-col">เวลาคิด</span></div>' +
+    v.items.map(function(it){
+      var q = QUIZ[it.qi];
+      var wrong = it.topWrong != null && it.topWrongShare >= 0.05 ? '<span class="wrong">ตัวลวงที่เลือกมากสุด: “' + esc(q.o[it.topWrong]) + '” (' + pct(it.topWrongShare) + ')</span>' : '';
+      var tip = 'ข้อ ' + (it.qi + 1) + ': ตอบถูก ' + pct(it.rate) + ' จาก ' + num(it.n) + ' คน';
+      return '<div class="item" tabindex="0" data-tip="' + esc(tip) + '"><span class="item-no">' + (it.qi + 1) + '</span>' +
+        '<span class="item-q">' + esc(q.s) + wrong + '</span>' +
+        '<span class="bar-col"><span class="hbar-track" style="display:block"><span class="hbar-fill" style="width:' + ((it.rate || 0) * 100) + '%;background:var(--series)"></span></span></span>' +
+        '<span class="item-num"><b>' + pct(it.rate) + '</b></span>' +
+        '<span class="item-num time-col">' + (it.medTime == null ? '–' : Math.round(it.medTime / 1000) + ' วิ') + '</span></div>';
+    }).join('');
+  var msg = hardest && hardest.rate < 0.75 ? '<p class="insight">ข้อที่ผู้เรียนพลาดมากที่สุดคือ <b>ข้อ ' + (hardest.qi + 1) + ' — ' + esc(QUIZ[hardest.qi].s) + '</b> (ตอบถูก ' + pct(hardest.rate) + ') ควรเน้นประเด็นนี้ในบทเรียน</p>' : '';
+  el.innerHTML = '<div class="items">' + rows + '</div>' + msg;
+}
+
+function renderSchools(){
+  var v = view, card = $('school-card');
+  if(!v.schoolRows.length){ card.hidden = true; return; }
+  card.hidden = false;
+  $('school-table').innerHTML = '<div class="tbl-wrap"><table><thead><tr><th>สำนักวิชา</th><th class="num">ผู้เข้าร่วม</th><th class="num">คะแนนเฉลี่ย</th><th class="num">ได้รับสาย</th><th class="num">อัตราหลงเชื่อ</th></tr></thead><tbody>' +
+    v.schoolRows.map(function(r){
+      return '<tr><td>' + esc(r.school) + '</td><td class="num">' + num(r.n) + '</td><td class="num">' + (r.avgScore == null ? '–' : r.avgScore.toFixed(1)) +
+        '</td><td class="num">' + num(r.calls) + '</td><td class="num">' + pct(r.rate) + (r.calls && r.calls < 10 ? ' <span style="color:var(--muted)">*</span>' : '') + '</td></tr>';
+    }).join('') + '</tbody></table></div><p class="footnote">* น้อยกว่า 10 คน ควรตีความอย่างระมัดระวัง</p>';
+}
+
+function outcomePill(s){
+  var o = outcomeOf(s);
+  if(!o) return '<span style="color:var(--muted)">' + (s.status === 'completed' ? 'ไม่มีสาย' : '–') + '</span>';
+  var meta = OUTCOME_BY_KEY[o];
+  return '<span class="pill"><span class="sw" style="background:' + meta.color + '"></span>' + esc(meta.label.replace(' (ปล่อยให้ดังจนตัด)', '')) + '</span>';
+}
+function statusText(s){
+  if(s.status === 'completed') return 'จบ';
+  return (Date.now() - s.updated_at < STALE_MS) ? '<span style="color:var(--safe)">กำลังทำ</span>' : '<span style="color:var(--muted)">ไม่จบ</span>';
+}
+function renderTable(){
+  var v = view, el = $('session-table');
+  if(!v.sessions.length){ el.innerHTML = '<p class="empty">ยังไม่มีรายการ</p>'; return; }
+  var list = v.sessions.slice(0, ui.tableLimit);
+  el.innerHTML = '<div class="tbl-wrap"><table><thead><tr><th>เวลา</th><th>รหัสนักศึกษา</th><th>กลุ่ม</th><th class="num">คะแนน</th><th class="num">เวลาทำ</th><th>ผลสาย</th><th class="num">คุยสาย</th><th>สถานะ</th></tr></thead><tbody>' +
+    list.map(function(s){
+      return '<tr class="row" data-id="' + esc(s.id) + '" tabindex="0"><td>' + fmtTime(s.created_at) + '</td><td>' + esc(maskId(s.student_id)) + '</td><td>' + esc(s.class_code || '–') +
+        '</td><td class="num">' + (s.score == null ? '–' : s.score + '/' + (s.total || QUIZ.length)) + '</td><td class="num">' + fmtDur(s.quiz_active_ms) +
+        '</td><td>' + outcomePill(s) + '</td><td class="num">' + (s.call_duration_ms ? fmtDur(s.call_duration_ms) : '–') + '</td><td>' + statusText(s) + '</td></tr>';
+    }).join('') + '</tbody></table></div>' +
+    (v.sessions.length > ui.tableLimit ? '<div class="more"><button class="btn" id="more-btn">แสดงเพิ่ม (' + num(v.sessions.length - ui.tableLimit) + ')</button></div>' : '');
+}
+
+/* ================= drawer: รายละเอียด + บทสนทนา ================= */
+function openDrawer(id){
+  var s = raw.sessions.filter(function(x){ return x.id === id; })[0];
+  if(!s) return;
+  var ans = raw.answers.filter(function(a){ return a.session_id === id; }).sort(function(a, b){ return a.q_index - b.q_index; });
+  var o = outcomeOf(s);
+  var reasonMap = { user:'ผู้เรียนวางสายเอง', mic_error:'ไมโครโฟนใช้ไม่ได้', no_speech:'ไม่ได้ยินเสียงผู้เรียน', ai_error:'เชื่อมต่อ AI ไม่สำเร็จ' };
+  var html = '<div class="drawer-bg" id="drawer-bg"><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dr-title">' +
+    '<div class="drawer-top"><div><h3 id="dr-title">รหัส ' + esc(maskId(s.student_id)) + '</h3><p class="desc">' + fmtTime(s.created_at) + (s.class_code ? ' · ' + esc(s.class_code) : '') + '</p></div>' +
+    '<button class="btn" id="drawer-close" aria-label="ปิด">ปิด</button></div>' +
+    '<dl class="kv">' +
+      '<dt>คะแนน</dt><dd>' + (s.score == null ? '–' : s.score + '/' + (s.total || QUIZ.length)) + '</dd>' +
+      '<dt>เวลาอ่านบทเรียน</dt><dd>' + fmtDur(s.lesson_ms) + '</dd>' +
+      '<dt>เวลาทำแบบทดสอบ</dt><dd>' + fmtDur(s.quiz_active_ms) + '</dd>' +
+      '<dt>สายเข้าระหว่างข้อ</dt><dd>' + (s.call_trigger_q || '–') + (s.call_forced ? ' (บังคับก่อนดูผล)' : '') + '</dd>' +
+      '<dt>ผลสาย</dt><dd>' + outcomePill(s) + '</dd>' +
+      '<dt>สายดังก่อนตัดสินใจ</dt><dd>' + fmtDur(s.ring_ms) + '</dd>' +
+      '<dt>ระยะเวลาคุย</dt><dd>' + (s.call_duration_ms ? fmtDur(s.call_duration_ms) + ' · พูด ' + (s.call_turns || 0) + ' ครั้ง' : '–') + '</dd>' +
+      (s.call_outcome === 'hungup' ? '<dt>สาเหตุวางสาย</dt><dd>' + esc(reasonMap[s.call_end_reason] || '–') + (s.mic_error && s.call_end_reason !== 'user' ? ' (' + esc(s.mic_error) + ')' : '') + '</dd>' : '') +
+      '<dt>อุปกรณ์</dt><dd>' + esc((s.device || '–') + ' / ' + (s.browser || '–')) + '</dd>' +
+      (s.school ? '<dt>สำนักวิชา</dt><dd>' + esc(s.school) + (s.year ? ' ปี ' + s.year : '') + '</dd>' : '') +
+      '<dt>คำตอบรายข้อ</dt><dd>' + (ans.length ? ans.map(function(a){ return (a.q_index + 1) + (a.correct ? '✓' : '✗'); }).join(' ') : '–') + '</dd>' +
+    '</dl>' +
+    (o && o !== 'declined' && o !== 'missed' ? '<h3 style="margin-top:24px;font-size:15px">บทสนทนาในสาย</h3><div class="turns" id="turns"><p class="empty">กำลังโหลด…</p></div>' : '') +
+    (DEMO ? '' : '<div style="margin-top:28px"><button class="btn danger-btn" id="del-btn">ลบรายการนี้ (เช่น ข้อมูลทดสอบ)</button></div>') +
+    '</aside></div>';
+  $('drawer-root').innerHTML = html;
+  $('drawer-root').dataset.id = id;
+  $('drawer-close').focus();
+  if($('turns')){
+    var p = DEMO ? Promise.resolve({ turns:demoTranscript(s) }) : api('/api/admin/transcript?id=' + encodeURIComponent(id));
+    p.then(function(d){
+      var t = d.turns || [];
+      $('turns').innerHTML = t.length ? t.map(function(x){
+        return '<div class="turn ' + (x.role === 'user' ? 'user' : 'assistant') + '"><span class="t">' + (x.role === 'user' ? 'ผู้เรียน' : 'มิจฉาชีพ (AI)') + ' · ' + fmtDur(x.t_ms) + '</span>' + esc(x.text) + '</div>';
+      }).join('') : '<p class="empty">ไม่มีบทสนทนา</p>';
+    }).catch(function(){ $('turns').innerHTML = '<p class="empty">โหลดบทสนทนาไม่สำเร็จ</p>'; });
+  }
+}
+function closeDrawer(){ $('drawer-root').innerHTML = ''; }
+
+/* ================= CSV ================= */
+function exportCsv(){
+  var cols = ['id','created_at','student_id','class_code','school','year','status','score','total','lesson_ms','quiz_active_ms',
+              'call_trigger_q','call_forced','ring_ms','call_outcome','call_end_reason','call_duration_ms','call_turns','mic_error','device','browser','consent_version'];
+  var byS = {};
+  raw.answers.forEach(function(a){ (byS[a.session_id] = byS[a.session_id] || {})[a.q_index] = a; });
+  var head = cols.concat(['created_at_local']);
+  QUIZ.forEach(function(_, i){ head.push('q' + (i + 1) + '_selected', 'q' + (i + 1) + '_correct', 'q' + (i + 1) + '_time_ms'); });
+  var lines = [head.join(',')];
+  view.sessions.forEach(function(s){
+    var row = cols.map(function(c){ return s[c]; });
+    row.push(new Date(s.created_at).toLocaleString('th-TH'));
+    QUIZ.forEach(function(_, i){ var a = (byS[s.id] || {})[i]; row.push(a ? a.selected : '', a ? a.correct : '', a ? a.time_ms : ''); });
+    lines.push(row.map(function(v){
+      if(v == null) return '';
+      var t = String(v);
+      return /[",\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t;
+    }).join(','));
+  });
+  var blob = new Blob(['﻿' + lines.join('\n')], { type:'text/csv;charset=utf-8' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'scam-awareness-' + (DEMO ? 'demo-' : '') + new Date().toISOString().slice(0, 10) + '.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
+}
+
+/* ================= tooltip ================= */
+var tipEl = $('tip');
+function showTip(target, x, y){
+  var t = target.getAttribute('data-tip');
+  if(!t){ tipEl.hidden = true; return; }
+  tipEl.textContent = t; tipEl.hidden = false;
+  var r = tipEl.getBoundingClientRect();
+  var left = Math.min(window.innerWidth - r.width - 8, Math.max(8, x + 14));
+  var top = y - r.height - 12; if(top < 8) top = y + 18;
+  tipEl.style.left = left + 'px'; tipEl.style.top = top + 'px';
+}
+document.addEventListener('pointermove', function(e){
+  var t = e.target.closest && e.target.closest('[data-tip]');
+  if(t) showTip(t, e.clientX, e.clientY); else tipEl.hidden = true;
+});
+document.addEventListener('focusin', function(e){
+  var t = e.target.closest && e.target.closest('[data-tip]');
+  if(t){ var r = t.getBoundingClientRect(); showTip(t, r.left + r.width / 2, r.top); } else tipEl.hidden = true;
+});
+document.addEventListener('scroll', function(){ tipEl.hidden = true; }, true);
+
+/* ================= events ================= */
+function setLive(on){
+  ui.live = on;
+  clearInterval(liveTimer);
+  if(on) liveTimer = setInterval(function(){ if(document.visibilityState === 'visible') refresh(); }, LIVE_INTERVAL_MS);
+}
+function logout(msg){
+  setLive(false); token = ''; store('sa_admin_token', null);
+  if(DEMO){ location.href = location.pathname; return; }
+  $('dash').hidden = true; $('login').hidden = false;
+  $('login-err').textContent = msg || '';
+  $('token-input').value = ''; $('token-input').focus();
+}
+function enterDash(){
+  $('login').hidden = true; $('dash').hidden = false;
+  $('demo-banner').hidden = !DEMO;
+  return refresh();
+}
+
+$('login-form').addEventListener('submit', function(e){
+  e.preventDefault();
+  token = $('token-input').value.trim();
+  $('login-err').textContent = 'กำลังตรวจสอบ…';
+  api('/api/admin/data').then(function(d){
+    store('sa_admin_token', token);
+    raw = d; $('login-err').textContent = '';
+    $('login').hidden = true; $('dash').hidden = false;
+    applyAndRender();
+  }).catch(function(err){
+    $('login-err').textContent = err && err.auth ? 'รหัสเข้าใช้งานไม่ถูกต้อง' : 'เชื่อมต่อ Worker ไม่สำเร็จ ตรวจสอบอินเทอร์เน็ตหรือการตั้งค่า';
+  });
+});
+$('range-seg').addEventListener('click', function(e){
+  var b = e.target.closest('button[data-range]'); if(!b) return;
+  ui.range = b.dataset.range;
+  Array.prototype.forEach.call(this.querySelectorAll('button'), function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+  applyAndRender();
+});
+$('class-select').addEventListener('change', function(){ ui.cls = this.value; applyAndRender(); });
+$('first-only').addEventListener('change', function(){ ui.firstOnly = this.checked; applyAndRender(); });
+$('live-toggle').addEventListener('change', function(){ setLive(this.checked); applyAndRender(); });
+$('unmask').addEventListener('change', function(){ ui.unmask = this.checked; renderTable(); });
+$('present-btn').addEventListener('click', function(){
+  ui.present = !ui.present;
+  this.setAttribute('aria-pressed', ui.present ? 'true' : 'false');
+  document.body.classList.toggle('present', ui.present);
+  if(ui.present){ ui.unmask = false; $('unmask').checked = false; closeDrawer(); }
+  applyAndRender();
+});
+$('csv-btn').addEventListener('click', exportCsv);
+$('logout-btn').addEventListener('click', function(){ logout(''); });
+document.addEventListener('click', function(e){
+  var row = e.target.closest('tr.row');
+  if(row && !ui.present){ openDrawer(row.dataset.id); return; }
+  if(e.target.id === 'more-btn'){ ui.tableLimit += 100; renderTable(); return; }
+  if(e.target.id === 'drawer-close' || e.target.id === 'drawer-bg'){ closeDrawer(); return; }
+  if(e.target.id === 'del-btn'){
+    var id = $('drawer-root').dataset.id;
+    if(!id || !confirm('ลบรายการนี้ถาวร รวมคำตอบและบทสนทนา?')) return;
+    e.target.disabled = true;
+    api('/api/admin/delete', { method:'POST', headers:{ 'content-type':'application/json' }, body:JSON.stringify({ ids:[id] }) })
+      .then(function(){
+        raw.sessions = raw.sessions.filter(function(x){ return x.id !== id; });
+        raw.answers = raw.answers.filter(function(x){ return x.session_id !== id; });
+        closeDrawer(); applyAndRender();
+      }).catch(function(){ e.target.disabled = false; alert('ลบไม่สำเร็จ'); });
+  }
+});
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape') closeDrawer();
+  if(e.key === 'Enter' && e.target.matches && e.target.matches('tr.row')) openDrawer(e.target.dataset.id);
+});
+var resizeT = null;
+window.addEventListener('resize', function(){ clearTimeout(resizeT); resizeT = setTimeout(function(){ if(view){ renderDuration(); renderTime(); } }, 150); });
+
+/* ================= start ================= */
+if(DEMO){ enterDash(); }
+else {
+  token = load('sa_admin_token') || '';
+  if(token) enterDash(); else { $('login').hidden = false; $('token-input').focus(); }
+}
+})();
+</script>
+</body>
+</html>
