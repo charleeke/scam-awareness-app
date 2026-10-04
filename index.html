@@ -108,6 +108,18 @@
   .home-note{ font-size:13.5px; color:var(--paper-text-soft); margin-top:14px; line-height:1.6; }
   .home-warning{ font-size:13px; color:var(--danger); margin-top:14px; line-height:1.5; background:var(--danger-bg); padding:10px 12px; border-radius:10px; }
   .home-screen .btn-primary{ margin-top:auto; }
+  .consent-slot{ width:100%; margin-bottom:22px; }
+  .consent-slot:empty{ margin-bottom:0; }
+  .home-screen .consent-slot + .btn-primary{ margin-top:auto; }
+  .consent-box{ width:100%; margin-top:18px; padding:14px 16px; border-radius:12px; background:#EFE8D6; border:1px solid var(--line); }
+  .consent-title{ font-size:13px; font-weight:700; color:var(--paper-text); }
+  .consent-text{ font-size:13px; line-height:1.6; color:var(--paper-text-soft); margin-top:6px; }
+  .consent-meta{ font-size:12px; line-height:1.5; color:var(--paper-text-soft); margin-top:6px; }
+  .consent-check{ display:flex; gap:10px; align-items:flex-start; margin-top:12px; font-size:14px; font-weight:600; line-height:1.45; cursor:pointer; }
+  .consent-check input{ width:20px; height:20px; margin:1px 0 0; flex:0 0 auto; accent-color:var(--ink); }
+  #sid-wrap .field-label{ display:block; margin-top:14px; margin-bottom:6px; }
+  .field-error{ font-size:13px; color:var(--danger); margin-top:6px; min-height:0; }
+  .field-error:empty{ display:none; }
 
   /* ---- lesson ---- */
   .dots{ display:flex; gap:6px; margin-top:16px; }
@@ -229,6 +241,19 @@
    (ดูวิธีสร้าง Worker ในไฟล์ worker.js ที่แนบมาในโฟลเดอร์เดียวกัน)
    ========================================================= */
 var WORKER_URL = 'https://scam-awareness-proxy.charlee-qq.workers.dev';
+var WORKER_BASE = WORKER_URL.replace(/\/+$/, '');
+var RING_TIMEOUT_MS = 30000; // สายดังนานเท่านี้แล้วไม่กดอะไร = "ไม่รับสาย"
+
+/* ---------------- ข้อมูลโครงการวิจัย (แก้ตรงนี้หลังได้รับอนุมัติจริยธรรม) ----------------
+   ข้อความยินยอมจะแสดงที่หน้าแรกเฉพาะเมื่อ Worker เปิด TRACKING_ENABLED=1 เท่านั้น
+   ถ้าแก้ข้อความยินยอม ให้เปลี่ยน consentVersion ด้วย (ระบบบันทึกว่าแต่ละคนยินยอมเวอร์ชันไหน) */
+var RESEARCH_INFO = {
+  consentVersion: 'v1',
+  ethicsRef: '',   // เช่น 'WUEC-26-xxx-01' — เว้นว่างไว้จนกว่าจะได้เลขที่รับรอง
+  contact: 'สำนักวิชาสารสนเทศศาสตร์ มหาวิทยาลัยวลัยลักษณ์',
+  collected: 'รหัสนักศึกษา, คำตอบและเวลาที่ใช้ทำแบบทดสอบ, การรับหรือไม่รับสายจำลอง, ระยะเวลาสนทนา และข้อความบทสนทนาที่ถอดจากเสียง (ไม่บันทึกไฟล์เสียง)',
+  purpose: 'ใช้เพื่อการวิจัยและพัฒนาการเรียนการสอนเท่านั้น ผลการวิเคราะห์นำเสนอในภาพรวมโดยไม่ระบุตัวบุคคล การเข้าร่วมเป็นไปโดยสมัครใจ หากไม่ยินยอมก็ใช้งานได้ตามปกติโดยไม่มีการบันทึกข้อมูลใด ๆ'
+};
 var ANTHROPIC_MODEL = 'claude-haiku-4-5-20251001'; // ใช้ Haiku เพราะเร็วกว่า Sonnet มากสำหรับคำตอบสั้น ๆ แบบนี้ — ความแม่นยำของบทสนทนาสั้นระดับนี้ไม่ต่างกันมาก
 
 /* ---------------- เนื้อหาบทเรียน ---------------- */
@@ -333,8 +358,131 @@ var state = {
   conversationHistory: [],
   callStartTime: 0,
   callTimerId: null,
-  emptyListenCount: 0
+  emptyListenCount: 0,
+  ringTimeoutId: null,
+  callIssue: null,      // ปัญหาทางเทคนิคระหว่างสาย: mic_error / no_speech / ai_error
+  consent: false,
+  studentId: ''
 };
+
+/* ---------------- ระบบบันทึกผล (ทำงานเฉพาะเมื่อ Worker เปิด และผู้ใช้ยินยอม) ----------------
+   ทุกเวลาคำนวณจากการเปลี่ยนหน้าจอใน render() จุดเดียว เพื่อให้ "เวลาทำควิซ"
+   ไม่รวมช่วงที่สายจำลองแทรกเข้ามา และเวลาต่อข้อหยุดนับระหว่างคุยโทรศัพท์
+   ถ้าส่งข้อมูลไม่สำเร็จ แอปยังเล่นต่อได้ตามปกติ (ไม่รอ ไม่แจ้ง error) */
+var Tracker = (function(){
+  var enabled = false, pattern = /^[0-9]{5,12}$/;
+  var s = null, answers = [], turns = [], issue = null;
+  var clk = { screen:null, since:0, qAccum:0, qSince:0, callStart:0 };
+  var classCode = null;
+  try{ classCode = (new URLSearchParams(location.search).get('c') || '').trim().slice(0,40) || null; }catch(e){}
+
+  function now(){ return Date.now(); }
+  function uuid(){
+    if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    var b = new Uint8Array(16); crypto.getRandomValues(b);
+    b[6] = (b[6] & 15) | 64; b[8] = (b[8] & 63) | 128;
+    var h = Array.prototype.map.call(b, function(x){ return (x+256).toString(16).slice(1); }).join('');
+    return h.slice(0,8)+'-'+h.slice(8,12)+'-'+h.slice(12,16)+'-'+h.slice(16,20)+'-'+h.slice(20);
+  }
+  function deviceInfo(){
+    var ua = navigator.userAgent || '';
+    var ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+    var device = ios ? 'ios' : (/Android/.test(ua) ? 'android' : 'desktop');
+    var browser = /CriOS|Chrome/.test(ua) && !/Edg|OPR|SamsungBrowser/.test(ua) ? 'chrome'
+      : (/Safari/.test(ua) && !/Chrome|CriOS|FxiOS|EdgiOS|Android/.test(ua) ? 'safari' : 'other');
+    return { device:device, browser:browser };
+  }
+  function redact(text){
+    var t = String(text || '');
+    var n = state.userName;
+    if(n && n.length >= 2) t = t.split(n).join('[ชื่อ]'); // ไม่เก็บชื่อเล่นที่ผู้ใช้กรอก
+    return t.slice(0, 800);
+  }
+  function flush(){
+    if(!s) return;
+    try{
+      fetch(WORKER_BASE + '/api/log', {
+        method:'POST', keepalive:true,
+        headers:{ 'content-type':'text/plain;charset=UTF-8' }, // simple request ไม่ต้องมี preflight
+        body: JSON.stringify({ session:s, answers:answers, turns:turns })
+      }).catch(function(){});
+    }catch(e){}
+  }
+
+  return {
+    init: function(){
+      return fetch(WORKER_BASE + '/api/config').then(function(r){ return r.ok ? r.json() : null; })
+        .then(function(cfg){
+          if(cfg && cfg.tracking){
+            enabled = true;
+            try{ pattern = new RegExp(cfg.studentIdPattern); }catch(e){}
+          }
+        }).catch(function(){});
+    },
+    available: function(){ return enabled; },
+    validId: function(id){ return pattern.test(id); },
+    begin: function(studentId){
+      if(!enabled) return;
+      var d = deviceInfo();
+      s = { id:uuid(), student_id:studentId, class_code:classCode, consent_version:RESEARCH_INFO.consentVersion,
+            device:d.device, browser:d.browser, status:'in_progress', last_screen:'home',
+            lesson_ms:0, quiz_active_ms:0, score:0, total:QUIZ.length, call_turns:0 };
+      answers = []; turns = []; issue = null;
+      clk = { screen:'home', since:now(), qAccum:0, qSince:now(), callStart:0 };
+      flush();
+    },
+    end: function(){ s = null; },
+    // เรียกจาก render() ทุกครั้ง — คำนวณเวลาเฉพาะตอนเปลี่ยนหน้าจอ
+    screen: function(next){
+      if(!s || next === clk.screen) return;
+      var t = now(), prev = clk.screen, spent = t - clk.since;
+      if(prev === 'lesson') s.lesson_ms += spent;
+      if(prev === 'quiz'){ s.quiz_active_ms += spent; clk.qAccum += t - clk.qSince; }
+      if(prev === 'incoming-call') s.ring_ms = spent;
+      if(prev === 'call') s.call_duration_ms = t - clk.callStart;
+      if(next === 'quiz') clk.qSince = t;
+      if(next === 'call') clk.callStart = t;
+      clk.screen = next; clk.since = t;
+      s.last_screen = next;
+    },
+    newQuestion: function(){ clk.qAccum = 0; clk.qSince = now(); },
+    answer: function(qIndex, selected, correct, score){
+      if(!s) return;
+      var ms = clk.qAccum + (clk.screen === 'quiz' ? now() - clk.qSince : 0);
+      answers = answers.filter(function(a){ return a.q_index !== qIndex; });
+      answers.push({ q_index:qIndex, selected:selected, correct:correct?1:0, time_ms:ms });
+      s.score = score;
+      flush();
+    },
+    callTriggered: function(questionNo, forced){
+      if(!s) return;
+      s.call_trigger_q = questionNo; s.call_forced = forced ? 1 : 0;
+      flush();
+    },
+    turn: function(role, text){
+      if(!s) return;
+      turns.push({ turn_no:turns.length, role:role, text:redact(text), t_ms: clk.callStart ? now() - clk.callStart : 0 });
+      if(role === 'user') s.call_turns++;
+    },
+    callIssue: function(reason, detail){
+      if(!s) return;
+      if(detail) s.mic_error = String(detail).slice(0,40);
+      issue = reason;
+    },
+    callEnded: function(outcome){
+      if(!s) return;
+      s.call_outcome = outcome;
+      s.call_end_reason = outcome === 'hungup' ? (issue || 'user') : null;
+      flush();
+    },
+    completed: function(score){
+      if(!s) return;
+      s.score = score; s.status = 'completed';
+      flush();
+    },
+    flush: flush
+  };
+})();
 
 /* ---------------- ยูทิลิตี้ ---------------- */
 function escapeHtml(str){
@@ -466,7 +614,7 @@ function buildSystemPrompt(name){
     '{"reply": "ข้อความที่จะพูด", "status": "continue หรือ transfer_confirmed"}';
 }
 async function callScammerAI(history){
-  var res = await fetch(WORKER_URL, {
+  var res = await fetch(WORKER_BASE + '/api/chat', {
     method: 'POST',
     headers: {
       'content-type': 'application/json'
@@ -526,13 +674,20 @@ function maybeScheduleCall(){
 }
 function triggerIncomingCall(){
   state.callTriggered = true;
+  state.callIssue = null;
   state.incomingNumber = randomPhone();
   state.screen = 'incoming-call';
+  Tracker.callTriggered(state.quizIndex+1, state.pendingFinalResult);
   render();
   startRingtone();
+  clearTimeout(state.ringTimeoutId);
+  state.ringTimeoutId = setTimeout(function(){
+    if(state.screen==='incoming-call') resolveCall('missed');
+  }, RING_TIMEOUT_MS);
 }
 function acceptCall(){
   stopRingtone();
+  clearTimeout(state.ringTimeoutId);
   state.screen = 'call';
   state.conversationHistory = [];
   state.emptyListenCount = 0;
@@ -540,6 +695,7 @@ function acceptCall(){
   startCallTimer();
   (function(){
     setStatus('กำลังเชื่อมสาย...');
+    Tracker.turn('assistant', openingLine(state.userName));
     speak(openingLine(state.userName)).then(function(){
       if(state.screen!=='call') return;
       startListenLoop();
@@ -569,10 +725,12 @@ function handleListenResult(result){
   if(!text || !text.trim()){
     if(error && hardErrors.indexOf(error)!==-1){
       setStatus(micDiagnosisMessage(error)+' — กดวางสายแล้วลองเปิดผ่านลิงก์เว็บแทน');
+      Tracker.callIssue('mic_error', error);
       return; // หยุดวนฟังซ้ำ เพราะเป็นปัญหาสิทธิ์/แพลตฟอร์ม ไม่ใช่แค่ไม่มีเสียง
     }
     state.emptyListenCount++;
     if(state.emptyListenCount >= 3){
+      Tracker.callIssue('no_speech', error);
       setStatus('ไม่ได้ยินเสียงติดต่อกันหลายครั้ง — ถ้าเปิดไฟล์นี้จากหน้าดาวน์โหลดของเบราว์เซอร์ ให้ลองเปิดผ่านลิงก์เว็บ (http/https) แทน แล้วกดวางสายเพื่อเริ่มใหม่');
       return;
     }
@@ -591,6 +749,7 @@ function handleListenResult(result){
 var FILLER_PHRASES = ['เอ่อ...', 'อืม...', 'ค่ะ...', 'สักครู่นะคะ...'];
 function handleUserUtterance(text){
   if(state.screen!=='call') return;
+  Tracker.turn('user', text);
   if(heuristicTransferConfirmed(text)){ resolveCall('transferred'); return; }
   state.conversationHistory.push({ role:'user', content:text });
   setStatus('กำลังประมวลผล');
@@ -614,6 +773,7 @@ function handleUserUtterance(text){
     clearTimeout(fillerTimerId);
     if(state.screen!=='call') return;
     state.conversationHistory.push({ role:'assistant', content: JSON.stringify(parsed) });
+    if(parsed.reply) Tracker.turn('assistant', parsed.reply);
     if(parsed.status==='transfer_confirmed'){ resolveCall('transferred'); return; }
     setStatus('กำลังพูด');
     speak(parsed.reply || 'ขอโทษค่ะ ช่วยพูดอีกครั้งได้ไหมคะ').then(function(){
@@ -623,20 +783,24 @@ function handleUserUtterance(text){
   }).catch(function(err){
     aiDone = true;
     clearTimeout(fillerTimerId);
+    Tracker.callIssue('ai_error', err && err.message);
     setStatus('เชื่อมต่อ AI ไม่สำเร็จ (ตรวจสอบ WORKER_URL หรืออินเทอร์เน็ต) — กดวางสายเพื่อลองใหม่');
   });
 }
 function resolveCall(outcome){
   clearCallTimer();
   stopRingtone();
+  clearTimeout(state.ringTimeoutId);
   if('speechSynthesis' in window) speechSynthesis.cancel();
   if(recognition){ try{ recognition.abort(); }catch(e){} recognition = null; }
   state.callOutcome = outcome;
   state.callTriggered = true;
   if(outcome==='declined') state.screen = 'decline-result';
+  else if(outcome==='missed') state.screen = 'missed-result';
   else if(outcome==='hungup') state.screen = 'hangup-result';
   else state.screen = 'transfer-result';
   render();
+  Tracker.callEnded(outcome);
 }
 
 /* ---------------- ตรรกะควิซ ---------------- */
@@ -646,12 +810,14 @@ function selectAnswer(i){
   var correct = i===q.correct;
   state.quizAnswers[state.quizIndex] = { selected:i, correct:correct };
   if(correct) state.score++;
+  Tracker.answer(state.quizIndex, i, correct, state.score);
   render();
 }
 function nextQuestion(){
   var isLast = state.quizIndex === QUIZ.length-1;
   if(isLast){ goToResultsOrForceCall(); return; }
   state.quizIndex++;
+  Tracker.newQuestion();
   maybeScheduleCall();
   render();
 }
@@ -664,7 +830,7 @@ function goToResultsOrForceCall(){
     showQuizResult();
   }
 }
-function showQuizResult(){ state.screen = 'quiz-result'; render(); }
+function showQuizResult(){ state.screen = 'quiz-result'; render(); Tracker.completed(state.score); }
 
 /* ---------------- อื่น ๆ ---------------- */
 function requestMic(){
@@ -676,6 +842,8 @@ function requestMic(){
 }
 function restart(){
   clearTimeout(state.callTimeoutId);
+  clearTimeout(state.ringTimeoutId);
+  Tracker.end();
   clearCallTimer();
   stopRingtone();
   if('speechSynthesis' in window) speechSynthesis.cancel();
@@ -697,7 +865,26 @@ function screenHome(){
       '<input id="name-input" class="text-input" type="text" placeholder="เช่น พลอย" maxlength="30" value="'+escapeHtml(state.userName)+'" />' +
       '<p class="home-note">ระหว่างทำแบบทดสอบ ระบบจะจำลองสายโทรเข้าและขอสิทธิ์ไมโครโฟน เพื่อให้คุณฝึกคุยโต้ตอบด้วยเสียงจริง</p>' +
       warn +
+      '<div id="consent-slot" class="consent-slot">'+consentHtml()+'</div>' +
       '<button class="btn-primary" data-action="start">เริ่มเรียนรู้</button>' +
+    '</div>';
+}
+function consentHtml(){
+  if(!Tracker.available()) return '';
+  var ref = RESEARCH_INFO.ethicsRef ? '<p class="consent-meta">เลขที่รับรองจริยธรรมการวิจัยในมนุษย์ '+escapeHtml(RESEARCH_INFO.ethicsRef)+'</p>' : '';
+  return '' +
+    '<div class="consent-box">' +
+      '<p class="consent-title">การเก็บข้อมูลเพื่อการวิจัย</p>' +
+      '<p class="consent-text"><strong>ข้อมูลที่บันทึก:</strong> '+escapeHtml(RESEARCH_INFO.collected)+'</p>' +
+      '<p class="consent-text">'+escapeHtml(RESEARCH_INFO.purpose)+'</p>' +
+      ref +
+      '<p class="consent-meta">ผู้รับผิดชอบ: '+escapeHtml(RESEARCH_INFO.contact)+'</p>' +
+      '<label class="consent-check"><input type="checkbox" id="consent-input"'+(state.consent?' checked':'')+' /> <span>ฉันอ่านแล้ว และยินยอมเข้าร่วมให้บันทึกข้อมูล</span></label>' +
+      '<div id="sid-wrap"'+(state.consent?'':' hidden')+'>' +
+        '<label class="field-label" for="sid-input">รหัสนักศึกษา</label>' +
+        '<input id="sid-input" class="text-input" type="text" inputmode="numeric" autocomplete="off" maxlength="20" placeholder="กรอกรหัสนักศึกษา" value="'+escapeHtml(state.studentId)+'" />' +
+        '<p class="field-error" id="sid-error" role="alert"></p>' +
+      '</div>' +
     '</div>';
 }
 function screenLesson(){
@@ -772,6 +959,9 @@ function screenCallResult(kind){
   if(kind==='decline'){
     tone='safe'; icon=iconShield(); title='ตัดสินใจถูกต้อง!';
     body='คุณปฏิเสธสายที่มีสัญญาณอันตรายได้ตั้งแต่ต้น นี่คือการตอบสนองที่ปลอดภัยที่สุดเมื่อเจอสายแปลกที่เร่งให้โอนเงิน';
+  } else if(kind==='missed'){
+    tone='safe'; icon=iconShield(); title='ไม่รับสายแปลก ก็ปลอดภัย';
+    body='คุณปล่อยให้สายจากเบอร์ที่ไม่รู้จักดังจนตัดไปเอง ถ้าเป็นเรื่องสำคัญจริง หน่วยงานจะติดต่อผ่านช่องทางทางการ หรือคุณโทรกลับไปตรวจสอบเองได้จากเบอร์ที่หาได้บนเว็บไซต์ทางการ';
   } else if(kind==='hangup'){
     tone='safe'; icon=iconShield(); title='วางสายได้ทันเวลา';
     body='แม้จะรับสายไปก่อน แต่คุณสังเกตสัญญาณอันตรายระหว่างคุยได้ และตัดสินใจวางสายก่อนเสียเงิน';
@@ -806,6 +996,7 @@ function screenQuizResult(){
   }).join('');
   var callOutcomeText = 'ไม่มีการทดสอบสายโทรเข้าในรอบนี้';
   if(state.callOutcome==='declined') callOutcomeText = 'ปฏิเสธสายหลอกลวงได้ถูกต้อง';
+  else if(state.callOutcome==='missed') callOutcomeText = 'ไม่รับสายจากเบอร์ที่ไม่รู้จัก — ปลอดภัย';
   else if(state.callOutcome==='hungup') callOutcomeText = 'วางสายได้ทันเวลาระหว่างสนทนา';
   else if(state.callOutcome==='transferred') callOutcomeText = 'โอนเงินไปแล้วในสถานการณ์จำลอง — ควรทบทวนสัญญาณอันตราย';
   return '' +
@@ -827,6 +1018,7 @@ function screenQuizResult(){
 var app = document.getElementById('app');
 var frame = document.getElementById('phone-frame');
 function render(){
+  Tracker.screen(state.screen);
   var isDark = (state.screen==='incoming-call' || state.screen==='call');
   frame.classList.toggle('dark', isDark);
   var html = '';
@@ -837,6 +1029,7 @@ function render(){
     case 'incoming-call': html = screenIncomingCall(); break;
     case 'call': html = screenCall(); break;
     case 'decline-result': html = screenCallResult('decline'); break;
+    case 'missed-result': html = screenCallResult('missed'); break;
     case 'hangup-result': html = screenCallResult('hangup'); break;
     case 'transfer-result': html = screenCallResult('transfer'); break;
     case 'quiz-result': html = screenQuizResult(); break;
@@ -851,6 +1044,15 @@ app.addEventListener('click', function(e){
   var action = el.dataset.action;
   switch(action){
     case 'start':
+      if(Tracker.available() && state.consent){
+        if(!Tracker.validId(state.studentId)){
+          var errEl = document.getElementById('sid-error');
+          if(errEl) errEl.textContent = state.studentId ? 'รูปแบบรหัสนักศึกษาไม่ถูกต้อง' : 'กรุณากรอกรหัสนักศึกษา หรือยกเลิกการยินยอมเพื่อใช้งานโดยไม่บันทึกข้อมูล';
+          var sidEl = document.getElementById('sid-input'); if(sidEl) sidEl.focus();
+          return;
+        }
+        Tracker.begin(state.studentId);
+      }
       unlockAudio();
       requestMic();
       tryEnterFullscreen();
@@ -895,10 +1097,31 @@ app.addEventListener('click', function(e){
 });
 app.addEventListener('input', function(e){
   if(e.target && e.target.id==='name-input'){ state.userName = e.target.value.trim(); }
+  if(e.target && e.target.id==='sid-input'){
+    state.studentId = e.target.value.replace(/\s+/g,'');
+    var errEl = document.getElementById('sid-error'); if(errEl) errEl.textContent = '';
+  }
+});
+app.addEventListener('change', function(e){
+  if(e.target && e.target.id==='consent-input'){
+    state.consent = e.target.checked;
+    var wrap = document.getElementById('sid-wrap');
+    if(wrap) wrap.hidden = !state.consent;
+    if(state.consent){ var sidEl = document.getElementById('sid-input'); if(sidEl) sidEl.focus(); }
+  }
+});
+// ส่งข้อมูลล่าสุดก่อนผู้ใช้สลับแอป/ปิดแท็บ
+document.addEventListener('visibilitychange', function(){
+  if(document.visibilityState==='hidden') Tracker.flush();
 });
 
 /* ---------------- เริ่มต้น ---------------- */
 render();
+Tracker.init().then(function(){
+  // เติมกล่องขอความยินยอมโดยไม่ render ทั้งหน้า (ไม่ให้ช่องชื่อที่กำลังพิมพ์หลุดโฟกัส)
+  var slot = document.getElementById('consent-slot');
+  if(state.screen==='home' && slot) slot.innerHTML = consentHtml();
+});
 })();
 </script>
 </body>
