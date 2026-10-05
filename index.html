@@ -466,6 +466,26 @@ function buildSystemPrompt(name){
     'ตอบกลับเป็น JSON เท่านั้น ห้ามมีข้อความอื่นนอกเหนือจาก JSON ค่าใน reply เป็นภาษาไทยเท่านั้น รูปแบบนี้:\n'+
     '{"reply": "ข้อความที่จะพูด", "status": "continue หรือ transfer_confirmed"}';
 }
+/* แกะ JSON จากคำตอบของ AI แบบทนทาน: รองรับ code fence, JSON ที่ถูกตัดกลางคัน (max_tokens หมด)
+   และไม่ปล่อยให้ข้อความดิบอย่าง { "reply": ... } หลุดไปให้ TTS อ่านออกเสียงเด็ดขาด */
+function parseAiReply(raw){
+  var text = String(raw||'').replace(/```(?:json)?/gi,'').trim();
+  var m = text.match(/\{[\s\S]*\}/);
+  if(m){
+    try{
+      var obj = JSON.parse(m[0]);
+      if(obj && typeof obj.reply==='string' && obj.reply.trim()) return { reply: obj.reply.trim(), status: obj.status==='transfer_confirmed' ? 'transfer_confirmed' : 'continue' };
+    }catch(e){}
+  }
+  var r = text.match(/"reply"\s*:\s*"((?:[^"\\]|\\.)*)/);
+  if(r && r[1].trim()){
+    var reply = r[1].replace(/\\n/g,' ').replace(/\\"/g,'"').replace(/\\\\/g,'\\').trim();
+    var st = text.match(/"status"\s*:\s*"(\w+)"/);
+    return { reply: reply, status: (st && st[1]==='transfer_confirmed') ? 'transfer_confirmed' : 'continue' };
+  }
+  if(text && !/[{}"]/.test(text)) return { reply: text, status: 'continue' };
+  return { reply: 'ขอโทษค่ะ สัญญาณไม่ค่อยดี ช่วยพูดอีกครั้งได้ไหมคะ', status: 'continue' };
+}
 async function callScammerAI(history){
   var res = await fetch(WORKER_URL, {
     method: 'POST',
@@ -474,7 +494,7 @@ async function callScammerAI(history){
     },
     body: JSON.stringify({
       model: ANTHROPIC_MODEL,
-      max_tokens: 110,
+      max_tokens: 300,
       system: buildSystemPrompt(state.userName),
       messages: history
     })
@@ -482,13 +502,8 @@ async function callScammerAI(history){
   if(!res.ok){ throw new Error('API error '+res.status); }
   var data = await res.json();
   var block = (data.content||[]).filter(function(b){ return b.type==='text'; })[0];
-  var raw = block ? block.text : '{}';
-  var parsed;
-  try{ parsed = JSON.parse(raw); }
-  catch(e){
-    var m = raw.match(/\{[\s\S]*\}/);
-    parsed = m ? JSON.parse(m[0]) : { reply: raw, status: 'continue' };
-  }
+  var raw = block ? block.text : '';
+  var parsed = parseAiReply(raw);
   return parsed;
 }
 
